@@ -1,4 +1,47 @@
 # AMS Frequency Moments
+
+## Stream generator
+Per generare lo stream utilizzato in questo lavoro si è utilizzato un generatore di numeri pseudo-casuali. Il generatore è disponibile nella directory "stream_generator" ed è stato implementato in C++. Il generatore si occupa, in aggiunta, del salvataggio dello stream in formato CSV.
+
+In tale directory sono presenti due script di utility scritti in bash chiamati "test_generatore.sh" e "controllo_input.sh" che hanno lo scopo di testare le combinazioni di input disponibili, controllando sia il corretto funzionamento delle opzioni disponibili che il corretto funzionamento dei meccanismi di controllo dell'input inserito da utente.
+
+Un Makefile è disponibile, in modo da semplificare la compilazione del programma.
+
+Le distribuzioni implementate per generare numeri pseudo-casualmente sono:
+- uniforme
+- esponenziale
+- poisson
+
+### Usage
+```
+Utilizzo: ./random [-d distribuzione] [-l lambda] [-a min] [-b max] [-n lunghezza] [-f file]
+Il seguente programma genera uno stream di numeri pseudo-casuali, salvando il risultato in un file in formato CSV.
+ATTENZIONE: Il seguente programma fornisce in output un file CSV di numeri interi, quindi per conservare le cifre decimali bisogna utilizzare l'opzione x
+Le opzioni disponibili sono le seguenti:
+  -h                Messaggio di aiuto
+  -d distribuzione  Permette di specificare una distribuzione da usare: uniforme, esponenziale, poisson. Se non specificato, verra' utilizzata la distribuzione uniforme
+  -l lambda         Permette di specificare il parametro lambda usato per le distribuzioni esponenziale e Poisson
+  -a min            Permette di specificare il limite inferiore per la distribuzione uniforme
+  -b max            Permette di specificare il limite superiore per la distribuzione uniforme
+  -n lunghezza      Permette di specificare la lunghezza dello stream
+  -x cifre          Permette di specificare il numero di cifre decimali da mantenere
+  -f file           Permette di specificare il nome del file CSV
+```
+
+### Implementazione
+La libreria getopt è stata utilizzata in modo da permettere l'utilizzo delle opzioni.
+
+La funzione err_sys è stata implementata in modo da mostrare a schermo un messaggio di errore descrittivo nel caso l'input fornito da utente non sia corretto e di terminare l'esecuzione del programma.
+
+Le funzioni "uniforme" e "esponenziale" sono state adattate per generare numeri interi: il numero generato viene moltiplicato per $10^x$, dove $x$ è uno dei parametri modificabili, per poi venire troncato.
+
+Sono stati eseguiti i seguenti controlli sull'input inserito da utente:
+- che dopo i numeri (a,b,lambda, x ed n) non ci siano lettere o simili
+- che la lunghezza dello stream e x siano un numeri interi e positivi
+- che a,b e lambda numeri decimali positivi
+- che  i numeri decimali e interi (a, b, lambda, x e n) siano inferiori al valore massimo possibile.
+
+
 ## Estimation of $F_0$
 Il paper di Alon et al., [1] propone una modifica all'algoritmo Flajolet-Martin proposto da Flajolet et al., [2] per calcolare il momento di ordine 0.
 

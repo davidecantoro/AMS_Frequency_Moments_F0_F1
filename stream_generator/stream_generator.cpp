@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
 
             case 'h':
                 std::cout << "Utilizzo: ./random [-d distribuzione] [-l lambda] [-a min] [-b max] [-n lunghezza] [-f file]\n"
-                          << "Il seguente programma genera uno stream di numeri pseudo-casuali, salvando il risultato in un file in formato CSV\n"
+                          << "Il seguente programma genera uno stream di numeri pseudo-casuali, salvando il risultato in un file in formato CSV.\n"
                           << "ATTENZIONE: Il seguente programma fornisce in output un file CSV di numeri interi, quindi per conservare le cifre decimali bisogna utilizzare l'opzione x\n"
                           << "Le opzioni disponibili sono le seguenti:\n"
                           << "  -h                Messaggio di aiuto\n"
