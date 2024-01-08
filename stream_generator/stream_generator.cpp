@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
     double a = 0.0;  // uniforme
     double b = 100.0;  // uniforme
     int n = 200;  // lunghezza stream
-    std::string filename = "stream.csv";  // nome 
+    std::string filename = "stream";  // nome 
     char file_extension[MAXLENGTHEXTENSION] = "csv";    // formato
 
     std::default_random_engine generator(3454256);  // seed
@@ -103,8 +103,8 @@ int main(int argc, char *argv[]) {
                 break;
             case 'b':
                 sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
-                if (sscanf(optarg, formato_input, &b) != 1 || b < 0.0f || b > FLT_MAX || resto_input[0] != '\0') {
-                    err_sys("Errore: Non hai inserito un numero float positivo per b\t");
+                if (sscanf(optarg, formato_input, &b) != 1 || b <= a || b < 0.0f || b > FLT_MAX || resto_input[0] != '\0') {
+                    err_sys("Errore: Non hai inserito un numero float positivo per b oppure b non valido\t");
                 }
                 break;
 
