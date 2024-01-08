@@ -76,7 +76,6 @@ AMS_Frequency_Moment(A, k): # A stream, k moment order
 
 
 ## Estimation of $F_0$
-Lo stream utilizzato è stato generato dal programma "generate_stream" ed è disponibile nella directory "stream_generator".
 
 Il paper di Alon et al., [1] propone una modifica all'algoritmo Flajolet-Martin proposto da Flajolet et al., [2] per calcolare il momento di ordine 0.
 
@@ -110,8 +109,10 @@ AMS_Frequency_Moment_0(A): # A stream
 define z: z=a*x+b
 define r: r calculate number of trailing 0s
 ```
-- $r$ è la funzione che calcola il numero di trailing 0s di $z_i$
-### Implementazione: Trailing 0s
+### Implementazione
+Lo stream utilizzato è stato generato dal programma "generate_stream" ed è disponibile nella directory "stream_generator".
+
+#### Trailing 0s
 La seguente implementazione in c calcola il numero di trailing 0s di un dato numero in input.
 La funzione accetta solo numeri interi non negativi.
 ```c
@@ -126,7 +127,7 @@ int trailing_0s(int a_i) {
 }
 ```
 
-### Implementazione: z hash
+#### Hash function z
 La funzione hash $z_i = a * a_i +b$ è stata implementata come segue
 ```c
 srand(3454256);  // seed
