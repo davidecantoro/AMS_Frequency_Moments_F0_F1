@@ -14,18 +14,20 @@ Le distribuzioni implementate per generare numeri pseudo-casualmente sono:
 
 ### Usage
 ```
-Utilizzo: ./random [-d distribuzione] [-l lambda] [-a min] [-b max] [-n lunghezza] [-f file]
+Utilizzo: ./generate_stream [-d distribuzione] [-l lambda] [-a min] [-b max] [-n lunghezza] [-f file]
 Il seguente programma genera uno stream di numeri pseudo-casuali, salvando il risultato in un file in formato CSV.
 ATTENZIONE: Il seguente programma fornisce in output un file CSV di numeri interi, quindi per conservare le cifre decimali bisogna utilizzare l'opzione x
 Le opzioni disponibili sono le seguenti:
   -h                Messaggio di aiuto
-  -d distribuzione  Permette di specificare una distribuzione da usare: uniforme, esponenziale, poisson. Se non specificato, verra' utilizzata la distribuzione uniforme
-  -l lambda         Permette di specificare il parametro lambda usato per le distribuzioni esponenziale e Poisson
-  -a min            Permette di specificare il limite inferiore per la distribuzione uniforme
-  -b max            Permette di specificare il limite superiore per la distribuzione uniforme
-  -n lunghezza      Permette di specificare la lunghezza dello stream
-  -x cifre          Permette di specificare il numero di cifre decimali da mantenere
-  -f file           Permette di specificare il nome del file CSV
+  -d distribuzione  Permette di specificare una distribuzione da usare: uniforme, esponenziale, poisson. Default = uniforme
+  -l lambda         Permette di specificare il parametro lambda usato per le distribuzioni esponenziale e Poisson. Default = 10
+  -a min            Permette di specificare il limite inferiore per la distribuzione uniforme. Default = 0
+  -b max            Permette di specificare il limite superiore per la distribuzione uniforme. Default = 100
+  -n lunghezza      Permette di specificare la lunghezza dello stream. Default = 200
+  -x cifre          Permette di specificare il numero di cifre decimali da mantenere. Default = 0
+  -f file           Permette di specificare il nome del file CSV fino ad un massimo di 49 caratteri. Default = stream
+  -e estensione     Permette di specificare l'estensione del file fino ad un massimo di 4 caratteri. Default = CSV
+  NOTA - caratteri non accettati: spazi, stringhe vuote, stringhe con solo spazi, caratteri speciali diversi da virgola, trattino e punto
 ```
 
 ### Implementazione
@@ -40,6 +42,7 @@ Sono stati eseguiti i seguenti controlli sull'input inserito da utente:
 - che la lunghezza dello stream e x siano un numeri interi e positivi
 - che a,b e lambda numeri decimali positivi
 - che  i numeri decimali e interi (a, b, lambda, x e n) siano inferiori al valore massimo possibile.
+- l'input relativo alla distribuzione è troncato per accettare massimo 13 caratteri (12 relativi ad esponenziale + il carattere null)
 
 
 ## Estimation of $F_0$

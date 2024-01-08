@@ -7,11 +7,14 @@
 #include <climits>      // INT_MAX 
 #include <algorithm>    // stringa in minuscolo
 #include <cstring>      // controllo sulla stringa
+#include <regex>        // regex per controllare l'input da utente
 
 #define MAXLENGTH 50
 #define MAXLENGTHDISTRIBUTION 13 // esponenziale + null
+#define MAXLENGTHEXTENSION 5
 
-void err_sys(const char* x) { 
+void err_sys(const char* x) {   // gestione del messaggio di errore con uscita forzata
+    errno = 1;      //: Operation not permitted
     perror(x); 
     exit(1); 
 }
@@ -47,29 +50,26 @@ int main(int argc, char *argv[]) {
 
     // Controllo input utente
     char buffer[MAXLENGTHDISTRIBUTION];
+    char buffer_filename[MAXLENGTH];
     char formato_input[20];
     char resto_input[MAXLENGTH] = "";
     float a_f = 0.0f;
+    std::regex filename_regex("^[\\w._,-]+$");
 
     // --- PARAMETRI DI DEFAULT ---
-    Distribuzione distribuzione = UNIFORME;  // distribuzione di default
-    double lambda = 1.0;  // esponenziale e poisson
-    double a = 0.0;  // inf default uniforme
-    double b = 100.0;  // sup default uniforme
+    Distribuzione distribuzione = UNIFORME;
+    double lambda = 10.0;  // esponenziale e poisson
+    double a = 0.0;  // uniforme
+    double b = 100.0;  // uniforme
     int n = 200;  // lunghezza stream
-    std::string filename = "stream.csv";  // nome file
+    std::string filename = "stream.csv";  // nome 
+    char file_extension[MAXLENGTHEXTENSION] = "csv";    // formato
 
     std::default_random_engine generator(3454256);  // seed
 
-     /*
-        Controlla l'input:
-        - che dopo i numeri (a,b,lambda ed n) non ci siano lettere o simili
-        - che la lunghezza stream sia intero e positivo
-        - che a,b e lambda siano float e positivi
-        - che float e int (a,b,lambda ed n) siano più piccoli del massimo valore possibile
-    */
+    // controlli input utente sulla docs
     // --- OPTIONS ---
-    while ((opt = getopt(argc, argv, "hd:l:a:b:n:f:x:")) != -1) {
+    while ((opt = getopt(argc, argv, "hd:l:a:b:n:f:x:e:")) != -1) {
         switch (opt) {
             case 'd':
 
@@ -85,14 +85,12 @@ int main(int argc, char *argv[]) {
                 } else if (strcmp(buffer, "poisson") == 0) {
                     distribuzione = POISSON;
                 }else {
-                    std::cout << "Errore: distribuzione " << optarg << " non valida \n";
-                    return 1;
+                    err_sys("Errore: La distribuzione inserita non è valida\t");
                 }
                 break;
             case 'l':
                 sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
                 if (sscanf(optarg, formato_input, &lambda) != 1 || lambda < 0.0f || lambda > FLT_MAX || resto_input[0] != '\0') {
-                    errno = 1;      //: Operation not permitted
                     err_sys("Errore: Non hai inserito un numero float positivo\t");
                 }
                 break;
@@ -100,14 +98,12 @@ int main(int argc, char *argv[]) {
             case 'a':
                 sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
                 if (sscanf(optarg, formato_input, &a) != 1 || a < 0.0f || a > FLT_MAX || resto_input[0] != '\0') {
-                    errno = 1;      //: Operation not permitted
                     err_sys("Errore: Non hai inserito un numero float positivo per a\t");
                 }
                 break;
             case 'b':
                 sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
                 if (sscanf(optarg, formato_input, &b) != 1 || b < 0.0f || b > FLT_MAX || resto_input[0] != '\0') {
-                    errno = 1;      //: Operation not permitted
                     err_sys("Errore: Non hai inserito un numero float positivo per b\t");
                 }
                 break;
@@ -115,48 +111,62 @@ int main(int argc, char *argv[]) {
             case 'n':
                 sprintf(formato_input, "%%d%%%ds", MAXLENGTH-1);
                 if (sscanf(optarg, formato_input, &n) != 1 || n < 0 || n > INT_MAX || resto_input[0] != '\0') {
-                    errno = 1;      //: Operation not permitted
                     err_sys("Errore: Non hai inserito un numero intero positivo per n\t");
                 }
                 break;
             case 'f':
-                filename = optarg;
+                if (std::regex_match(optarg, filename_regex) && (strlen(optarg) < MAXLENGTH) ) {
+                    strncpy(buffer_filename, optarg, MAXLENGTH-1);
+                    buffer_filename[MAXLENGTH-1] = '\0';
+                    filename = buffer_filename;
+                } else {
+                    err_sys("Errore: Nome del file non valido o troppo lungo\t");
+                }
                 break;
 
             case 'x':
                 sprintf(formato_input, "%%d%%%ds", MAXLENGTH-1);
                 if (sscanf(optarg, formato_input, &x) != 1 || x < 0 || x > INT_MAX || resto_input[0] != '\0') {
-                    errno = 1;      //: Operation not permitted
                     err_sys("Errore: Non hai inserito un numero intero positivo per n\t");
                 }
                 break;
+            case 'e':
+            if (strlen(optarg) < MAXLENGTHEXTENSION) {
+                strncpy(file_extension, optarg, MAXLENGTHEXTENSION-1);
+                file_extension[MAXLENGTHEXTENSION-1] = '\0';
+            } else {
+                err_sys("Errore: Estensione del file troppo lunga\t");
+
+            }
+            break;
 
 
             case 'h':
-                std::cout << "Utilizzo: ./random [-d distribuzione] [-l lambda] [-a min] [-b max] [-n lunghezza] [-f file]\n"
+                std::cout << "Utilizzo: ./generate_stream [-d distribuzione] [-l lambda] [-a min] [-b max] [-n lunghezza] [-f file]\n"
                           << "Il seguente programma genera uno stream di numeri pseudo-casuali, salvando il risultato in un file in formato CSV.\n"
                           << "ATTENZIONE: Il seguente programma fornisce in output un file CSV di numeri interi, quindi per conservare le cifre decimali bisogna utilizzare l'opzione x\n"
                           << "Le opzioni disponibili sono le seguenti:\n"
                           << "  -h                Messaggio di aiuto\n"
-                          << "  -d distribuzione  Permette di specificare una distribuzione da usare: uniforme, esponenziale, poisson. Se non specificato, verra\' utilizzata la distribuzione uniforme\n"
-                          << "  -l lambda         Permette di specificare il parametro lambda usato per le distribuzioni esponenziale e Poisson\n"
-                          << "  -a min            Permette di specificare il limite inferiore per la distribuzione uniforme\n"
-                          << "  -b max            Permette di specificare il limite superiore per la distribuzione uniforme\n"
-                          << "  -n lunghezza      Permette di specificare la lunghezza dello stream\n"
-                          << "  -x cifre          Permette di specificare il numero di cifre decimali da mantenere\n"
-                          << "  -f file           Permette di specificare il nome del file CSV\n";
+                          << "  -d distribuzione  Permette di specificare una distribuzione da usare: uniforme, esponenziale, poisson. Default = uniforme\n"
+                          << "  -l lambda         Permette di specificare il parametro lambda usato per le distribuzioni esponenziale e Poisson. Default = 10\n"
+                          << "  -a min            Permette di specificare il limite inferiore per la distribuzione uniforme. Default = 0\n"
+                          << "  -b max            Permette di specificare il limite superiore per la distribuzione uniforme. Default = 100\n"
+                          << "  -n lunghezza      Permette di specificare la lunghezza dello stream. Default = 200\n"
+                          << "  -x cifre          Permette di specificare il numero di cifre decimali da mantenere. Default = 0\n"
+                          << "  -f file           Permette di specificare il nome del file CSV fino ad un massimo di 49 caratteri. Default = stream\n"
+                          << "  -e estensione     Permette di specificare l'estensione del file fino ad un massimo di 4 caratteri. Default = CSV\n"
+                          << "  NOTA - caratteri non accettati: spazi, stringhe vuote, stringhe con solo spazi, caratteri speciali diversi da virgola, trattino e punto\n";
                 return 0;
             case '?':
-                std::cout << "Opzione sconosciuta: " << (char)optopt << "\n";
-                return 1;
+                err_sys("Errore: Opzione inserita sconosciuta\t");
+
         }
     }
 
     // apertura file
-    std::ofstream file(filename);
+    std::ofstream file(filename + "." + file_extension);
     if (!file) {
-        std::cout << "Impossibile aprire il file: " << filename << "\n";
-        return 1;
+        err_sys("Errore: Impossibile aprire il file\t");
     }
 
 
@@ -176,7 +186,6 @@ int main(int argc, char *argv[]) {
      
         }
     }
-
 
 
     // chiusura file
