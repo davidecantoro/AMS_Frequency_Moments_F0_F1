@@ -10,7 +10,7 @@ Sia $A = (a_1, a_2, ..., a_m)$ una sequenza di m elementi, con $a_i ∈ N=\{1,2,
 
 Denotiamo con $m_i$ le occorrenze i-esime nella sequenza A.
 
-Il momento di ordine k è dato da $ F_k = \sum_{i=1}^{n} m_i^k $, dove $m_i$ è il numero di occorrenze di $i$ nella sequenza.
+Il momento di ordine k è dato da $F_k = \sum_{i=1}^{n} m_i^k$, dove $m_i$ è il numero di occorrenze di $i$ nella sequenza.
 
 $F_k$ è definito come la somma k-esime potenze dei conteggi $m_i$.
 
@@ -23,7 +23,7 @@ Definiamo la variabile $X=m(r^k - (r-1)^k)$.
 
 Nel caso in cui $m$ è sconosciuta: quando $a_m$ (elemento m-esimo dello stram) arriva, lo rimpiazziamo ad $a_p$ con probabilità $1/m$, in questo caso $r$ viene impostato a 1, se non c'è rimpiazzo $r$ viene incrementato se $a_m = a_p$.
 
-Come dimostrato da Alon et al. [1], si ha che $E(X) = ∑_{i=1}^n m_i^k = F_k$ e $Var(X) = E(X^2) - (E(X))^2$ dove $E(X^2) ≤ kF_1F_{2k-1} $ .
+Come dimostrato da Alon et al. [1], si ha che $E(X) = ∑_{i=1}^n m_i^k = F_k$ e $Var(X) = E(X^2) - (E(X))^2$ dove $E(X^2) ≤ kF_1F_{2k-1}$ .
 
 ### Pseudocode
 Procedimento per una singola variabile X.
