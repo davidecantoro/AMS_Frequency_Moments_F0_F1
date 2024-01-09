@@ -13,10 +13,12 @@ CC = gcc
 # Opzioni di compilazione
 CFLAGS = -Wall -Wextra -g -c
 
+
 # Regola di default, compila il programma
 default: $(TARGET)
 $(TARGET): $(OBJECTS)
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ -lm
+# lm per usare la libreria math
 
 # Regola generica per la combinazione dei file oggetto
 %.o: %.c

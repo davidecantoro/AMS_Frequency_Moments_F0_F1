@@ -175,13 +175,13 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < n; i++) {       // nota: fare switch-for oppure for-switch è computazionalmente ininfluente
         switch (distribuzione) {
             case UNIFORME:
-                file << uniforme(generator, a, b, x) << "\n";      // genero numero e salvo su file
+                file << uniforme(generator, a, b, x) << ";\n";      // genero numero e salvo su file
                 break;
             case ESPONENZIALE:
-                file << esponenziale(generator, lambda, x) << "\n";
+                file << esponenziale(generator, lambda, x) << ";\n";
                 break;
             case POISSON:
-                file << poisson(generator, lambda) << "\n";
+                file << poisson(generator, lambda) << ";\n";
                 break;
      
         }

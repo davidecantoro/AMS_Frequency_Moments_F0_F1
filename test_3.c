@@ -1,9 +1,10 @@
 #include <stdio.h>
-#include <limits.h>     // più piccolo intero rappresentabile
+#include <limits.h>     // più piccolo e  più grande intero rappresentabile
 #include <stdlib.h>     // err_sys
 #include <errno.h>      // err_sys
+#include <math.h>
 
-#define MAXLENGTH 50
+//#define MAXLENGTH 50
 
 void err_sys(const char* x) { 
     perror(x); 
@@ -37,12 +38,17 @@ int max(int a, int b) {
         return b;
 }
 
+/*
+        L'INPUT DEVE ESSERE FORNITO NEL SEGUENTE METODO:
+        - SU UNA RIGA CI DEVE ESSERE UN SOLO NUMERO
+        - SONO ACCETTATI I SEGUENTI SEPARATORI , ;
+*/
 int main() {
 
     //controllo input utente
-    char buffer[MAXLENGTH];
+    //char buffer[MAXLENGTH];
     char formato_input[20];
-    char resto_input[MAXLENGTH] = "";
+    //char resto_input[MAXLENGTH] = "";
 
     int a_i;
     int r_i = 0;
@@ -61,30 +67,54 @@ int main() {
     //fgets(buffer, MAXLENGTH, stdin);
     FILE *file = fopen("stream_generator/stream.csv", "r");
     if (file == NULL) {
-        printf("eRRORE: Impossibile aprire il file.\n");
+        printf("Errore: Impossibile aprire il file.\n");
         return 1;
     }
     
 
-    sprintf(formato_input, "%%d%%%ds", MAXLENGTH-1);
+
+    char separatore = ';';
+    sprintf(formato_input, "%%d%c", separatore);
+    
+
+    while (fscanf(file, formato_input, &a_i) == 1){
+
+        if (a_i >= 0 && a_i <= INT_MAX) {
+            z_i = z_hash(a, a_i, b);
+            //printf("a_i = %d\tz = %d \n", a_i, z_i);
+            
+            
+            r_i = trailing_0s(z_i);
+            //printf("Numero di 0s: %d\n", r_i);
+
+            R = max(R,r_i);
+            //printf("R: %d", R);
 
 
-    while (fscanf(file, "%d,", &a_i) == 1){
-
-        if (sscanf(buffer, formato_input, &a_i) != 1 || a_i < 0 || resto_input[0] != '\0') {
-            errno = 1;      //: Operation not permitted
-            err_sys("Errore: Non hai inserito un numeri intero positivo\t");
+        } else {
+            printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
         }
 
-        z_i = z_hash(a, a_i, b);
-        printf("z = %d \n", z_i);
         
-        
-        r_i = trailing_0s(z_i);
-        printf("Numero di 0s: %d\n", r_i);
+       
 
-        R = max(R,r_i);
-        printf("R: %d", R);
     }
+
+    double lenght_stream_estimate = pow(2, R);
+    printf("Lunghezza stimata dello stream: %.0f\n",lenght_stream_estimate);
+
+    /*
+            DA FARE
+            - vedere se si può elevare a potenza in modo più efficiente di pow
+            - aggiungere optarg per controllare il separatore
+            - aggiungere opzione per nome file, estensione, location
+            - pulizia preliminare del input file, magari togliendo tutti i caratteri escluso numeri e separatore
+            - migliorare print
+            - implementare naiv F0 
+            - salvare risultato su file -> aggiungere tutto anche su optarg
+            - commenti e pulizia codice
+            - modificare README.md
+    */
+    fclose(file);
     return 0;
 }
