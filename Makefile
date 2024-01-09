@@ -17,7 +17,7 @@ CFLAGS = -Wall -Wextra -g -c
 # Regola di default, compila il programma
 default: $(TARGET)
 $(TARGET): $(OBJECTS)
-	$(CC) -o $@ $^ -lm
+	$(CC) -o $@ $^ #-lm
 # lm per usare la libreria math
 
 # Regola generica per la combinazione dei file oggetto

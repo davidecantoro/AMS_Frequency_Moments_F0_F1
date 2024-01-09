@@ -2,7 +2,7 @@
 #include <limits.h>     // più piccolo e  più grande intero rappresentabile
 #include <stdlib.h>     // err_sys
 #include <errno.h>      // err_sys
-#include <math.h>
+//#include <math.h>
 
 //#define MAXLENGTH 50
 
@@ -55,13 +55,14 @@ int main() {
     int a, b;  
     int z_i;
     int R = INT_MIN;    // R =  - inf
+    int distinct_item_estimate;
     
     unsigned int seed = 3454256;
 
 
     srand(seed); 
-    a = rand() % 100;  // [0;99]
-    b = rand() % 100;  // [0;99]
+    a = rand() % 10;  // [0;9]
+    b = rand() % 10;  // [0;9]
 
     //printf("Inserisci un numero intero positivo: ");
     //fgets(buffer, MAXLENGTH, stdin);
@@ -96,21 +97,28 @@ int main() {
         }
 
         
-       
-
     }
 
-    double lenght_stream_estimate = pow(2, R);
-    printf("Lunghezza stimata dello stream: %.0f\n",lenght_stream_estimate);
+    //double distinct_item_estimate = pow(2, R);
+    /*
+        Visto che R è un intero positivo e visto il nunmero distinct_item_estimate è una potenza di due posso 
+        usare lo shift a sinistra. Il vantaggio di usare lo shift invece che la funzione pow consiste nel 
+        evitare di utilizzare una libreria in più.
+        
+        2^8 2^7 2^6 2^5 2^4 2^3 2^2 2^1 2^0
+        Shift a sinistra: parto da 2^0 = 1 e shifto di R posizioni
+
+    */
+    distinct_item_estimate = 1 << R;
+    printf("Distinct item stimati: %d\n",distinct_item_estimate);
+    
 
     /*
             DA FARE
-            - vedere se si può elevare a potenza in modo più efficiente di pow
             - aggiungere optarg per controllare il separatore
             - aggiungere opzione per nome file, estensione, location
             - pulizia preliminare del input file, magari togliendo tutti i caratteri escluso numeri e separatore
             - migliorare print
-            - implementare naiv F0 
             - salvare risultato su file -> aggiungere tutto anche su optarg
             - commenti e pulizia codice
             - modificare README.md
