@@ -90,27 +90,27 @@ int main(int argc, char *argv[]) {
                 break;
             case 'l':
                 sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
-                if (sscanf(optarg, formato_input, &lambda) != 1 || lambda < 0.0f || lambda > FLT_MAX || resto_input[0] != '\0') {
+                if (sscanf(optarg, formato_input, &lambda, resto_input) != 1 || lambda < 0.0f || lambda > FLT_MAX || resto_input[0] != '\0') {
                     err_sys("Errore: Non hai inserito un numero float positivo\t");
                 }
                 break;
 
             case 'a':
                 sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
-                if (sscanf(optarg, formato_input, &a) != 1 || a < 0.0f || a > FLT_MAX || resto_input[0] != '\0') {
+                if (sscanf(optarg, formato_input, &a, resto_input) != 1 || a < 0.0f || a > FLT_MAX || resto_input[0] != '\0') {
                     err_sys("Errore: Non hai inserito un numero float positivo per a\t");
                 }
                 break;
             case 'b':
                 sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
-                if (sscanf(optarg, formato_input, &b) != 1 || b <= a || b < 0.0f || b > FLT_MAX || resto_input[0] != '\0') {
+                if (sscanf(optarg, formato_input, &b, resto_input) != 1 || b <= a || b < 0.0f || b > FLT_MAX || resto_input[0] != '\0') {
                     err_sys("Errore: Non hai inserito un numero float positivo per b oppure b non valido\t");
                 }
                 break;
 
             case 'n':
                 sprintf(formato_input, "%%d%%%ds", MAXLENGTH-1);
-                if (sscanf(optarg, formato_input, &n) != 1 || n < 0 || n > INT_MAX || resto_input[0] != '\0') {
+                if (sscanf(optarg, formato_input, &n, resto_input) != 1 || n < 0 || n > INT_MAX || resto_input[0] != '\0') {
                     err_sys("Errore: Non hai inserito un numero intero positivo per n\t");
                 }
                 break;
@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
 
             case 'x':
                 sprintf(formato_input, "%%d%%%ds", MAXLENGTH-1);
-                if (sscanf(optarg, formato_input, &x) != 1 || x < 0 || x > INT_MAX || resto_input[0] != '\0') {
+                if (sscanf(optarg, formato_input, &x, resto_input) != 1 || x < 0 || x > INT_MAX || resto_input[0] != '\0') {
                     err_sys("Errore: Non hai inserito un numero intero positivo per n\t");
                 }
                 break;

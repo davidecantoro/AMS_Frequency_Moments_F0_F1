@@ -57,30 +57,34 @@ int main() {
     a = rand() % 100;  // [0;99]
     b = rand() % 100;  // [0;99]
 
-    printf("Inserisci un numero intero positivo: ");
-    fgets(buffer, MAXLENGTH, stdin);
-    
-    /*
-    Controlla l'input:
-    - se intero
-    - lunghezza massima pari a MAXLENGTH
-    - che dopo il numero intero non ci siano lettere o simili
-    */
-    sprintf(formato_input, "%%d%%%ds", MAXLENGTH-1);
-    if (sscanf(buffer, formato_input, &a_i) != 1 || a_i < 0 || resto_input[0] != '\0') {
-        errno = 1;      //: Operation not permitted
-        err_sys("Errore: Non hai inserito un numeri intero positivo\t");
+    //printf("Inserisci un numero intero positivo: ");
+    //fgets(buffer, MAXLENGTH, stdin);
+    FILE *file = fopen("stream_generator/stream.csv", "r");
+    if (file == NULL) {
+        printf("eRRORE: Impossibile aprire il file.\n");
+        return 1;
     }
-
-    z_i = z_hash(a, a_i, b);
-    printf("z = %d \n", z_i);
     
-    
-    r_i = trailing_0s(z_i);
-    printf("Numero di 0s: %d\n", r_i);
 
-    R = max(R,r_i);
-    printf("R: %d", R);
+    sprintf(formato_input, "%%d%%%ds", MAXLENGTH-1);
 
+
+    while (fscanf(file, "%d,", &a_i) == 1){
+
+        if (sscanf(buffer, formato_input, &a_i) != 1 || a_i < 0 || resto_input[0] != '\0') {
+            errno = 1;      //: Operation not permitted
+            err_sys("Errore: Non hai inserito un numeri intero positivo\t");
+        }
+
+        z_i = z_hash(a, a_i, b);
+        printf("z = %d \n", z_i);
+        
+        
+        r_i = trailing_0s(z_i);
+        printf("Numero di 0s: %d\n", r_i);
+
+        R = max(R,r_i);
+        printf("R: %d", R);
+    }
     return 0;
 }
