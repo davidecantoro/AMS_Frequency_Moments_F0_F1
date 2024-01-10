@@ -1,24 +1,24 @@
-# Nome del programma da generare
+# output
 TARGET = generate_stream
 
-# Lista dei file sorgente nella cartella corrente
+# sorgente
 SOURCES = $(wildcard *.cpp)
 
-# Lista dei file oggetto generati durante la compilazione
+# file oggetto generati durante la compilazione
 OBJECTS = $(SOURCES:.cpp=.o)
 
-# Compilatore
+# compiler
 CC = g++
 
-# Regola di default, compila il programma
+# default rule: compila
 default: $(TARGET)
 $(TARGET): $(OBJECTS)
 	$(CC) -o $@ $^
 
-# Regola generica per la combinazione dei file oggetto
+# rule: combina i file .o
 %.o: %.cpp
 	$(CC) -c -o $@ $<
 
-# Pulisce i file oggetti e l'eseguibile 
+# rule clean
 clean:
 	rm -f $(OBJECTS) $(TARGET)

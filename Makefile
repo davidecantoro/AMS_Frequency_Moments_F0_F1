@@ -1,29 +1,28 @@
-# Nome del programma da generare
-TARGET = eseguibile
-
-# Lista dei file sorgente nella cartella corrente
+# sorgente
 SOURCES = $(wildcard *.c)
 
-# Lista dei file oggetto generati durante la compilazione
+# file oggetto generati durante la compilazione
 OBJECTS = $(SOURCES:.c=.o)
 
-# Compilatore
+# compiler
 CC = gcc
 
-# Opzioni di compilazione
+# flags di compilazione
 CFLAGS = -Wall -Wextra -g -c
 
+# file .c
+TARGETS = $(SOURCES:.c=)
 
-# Regola di default, compila il programma
-default: $(TARGET)
-$(TARGET): $(OBJECTS)
-	$(CC) -o $@ $^ #-lm
-# lm per usare la libreria math
+# default rule: compila
+all: $(TARGETS)
+%: %.c
+	$(CC) -o $@ $^ 
 
-# Regola generica per la combinazione dei file oggetto
+
+# rule: combina i file .o
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ $<
 
-# Pulisce i file oggetti e l'eseguibile 
+# rule clean
 clean:
 	rm -f $(OBJECTS) $(TARGET)

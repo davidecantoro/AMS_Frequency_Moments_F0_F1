@@ -4,7 +4,7 @@
 #include <errno.h>      // err_sys
 //#include <math.h>
 
-//#define MAXLENGTH 50
+#define MAXLENGTH 20
 
 void err_sys(const char* x) { 
     perror(x); 
@@ -47,7 +47,7 @@ int main() {
 
     //controllo input utente
     //char buffer[MAXLENGTH];
-    char formato_input[20];
+    char formato_input[MAXLENGTH];
     //char resto_input[MAXLENGTH] = "";
 
     int a_i;
@@ -99,6 +99,8 @@ int main() {
         
     }
 
+    fclose(file);
+
     //double distinct_item_estimate = pow(2, R);
     /*
         Visto che R è un intero positivo e visto il nunmero distinct_item_estimate è una potenza di due posso 
@@ -123,6 +125,6 @@ int main() {
             - commenti e pulizia codice
             - modificare README.md
     */
-    fclose(file);
+    
     return 0;
 }
