@@ -3,6 +3,7 @@
 #include <stdlib.h>     // err_sys
 #include <errno.h>      // err_sys
 //#include <math.h>
+#include <time.h>       // calcolo del tempo di esecuzione
 
 #define MAXLENGTH 20
 
@@ -56,6 +57,10 @@ int main() {
     int z_i;
     int R = INT_MIN;    // R =  - inf
     int distinct_item_estimate;
+
+    // calcolo del tempo
+    clock_t t_0, t_f;
+    double delta_t = 0.0;
     
     unsigned int seed = 3454256;
 
@@ -77,8 +82,11 @@ int main() {
     char separatore = ';';
     sprintf(formato_input, "%%d%c", separatore);
     
-
+    t_0 = clock();
     while (fscanf(file, formato_input, &a_i) == 1){
+
+        
+
 
         if (a_i >= 0 && a_i <= INT_MAX) {
             z_i = z_hash(a, a_i, b);
@@ -97,7 +105,12 @@ int main() {
         }
 
         
+
+        
     }
+    
+    t_f = clock();
+    delta_t = ((double) (t_f - t_0) / CLOCKS_PER_SEC);
 
     fclose(file);
 
@@ -112,15 +125,15 @@ int main() {
 
     */
     distinct_item_estimate = 1 << R;
+    printf("AMS Frequency Moments - momento di ordine 0 \n");
     printf("Distinct item stimati: %d\n",distinct_item_estimate);
+    printf("Tempo di esecuzione: %f [s]\n",delta_t);
     
 
     /*
             DA FARE
             - aggiungere optarg per controllare il separatore
             - aggiungere opzione per nome file, estensione, location
-            - pulizia preliminare del input file, magari togliendo tutti i caratteri escluso numeri e separatore
-            - migliorare print
             - salvare risultato su file -> aggiungere tutto anche su optarg
             - commenti e pulizia codice
             - modificare README.md
