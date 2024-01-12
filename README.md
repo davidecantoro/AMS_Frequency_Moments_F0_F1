@@ -21,7 +21,7 @@ Sia $r=|\{q:q \ge p, a_q =  a_p\}|$ il conteggio di $a_p$ in $A$, da un fissato 
 
 Definiamo la variabile $X=m(r^k - (r-1)^k)$.
 
-Nel caso in cui $m$ è sconosciuta: quando $a_m$ (elemento m-esimo dello stram) arriva, lo rimpiazziamo ad $a_p$ con probabilità $1/m$, in questo caso $r$ viene impostato a 1, se non c'è rimpiazzo $r$ viene incrementato se $a_m = a_p$.
+Nel caso in cui $m$ sia sconosciuta: quando $a_m$ (elemento m-esimo dello stram) arriva, viene rimpiazzato ad $a_p$ con probabilità $1/m$, in questo caso $r$ viene impostato a 1, se non c'è rimpiazzo $r$ viene incrementato se $a_m = a_p$.
 
 Come dimostrato da Alon et al. [1], si ha che $E(X) = ∑_{i=1}^n m_i^k = F_k$ e $Var(X) = E(X^2) - (E(X))^2$ dove $E(X^2) ≤ kF_1F_{2k-1}$ .
 
@@ -77,7 +77,7 @@ AMS_Frequency_Moment(A, k): # A stream, k moment order
 
 ## Estimation of $F_0$
 
-Il paper di Alon et al., [1] propone una modifica all'algoritmo Flajolet-Martin proposto da Flajolet et al., [2] per calcolare il momento di ordine 0.
+Il paper di Alon et al., [1] propone una modifica all'algoritmo Flajolet-Martin proposto da Flajolet et al., [2] per calcolare il momento di ordine 0. Questa implementazione utilizza un algoritmo randomico, la randomicità è introdotta dall'uso della funzione $z_i$, l'uso di un algoritmo randomico è particolarmente importante in quanto permette di usare solo O(log n) bit di memoria.
 
 Il momento di ordine k = 0, indicato anche $F_0$, è utilizzato per stimare il numero di elementi distinti in uno stream. 
 
@@ -264,6 +264,40 @@ int z_hash(int a, int x, int b) {
 }
 ```
 
+## Momento di ordine 1: $F_1$
+Il momento di ordine k pari a 1, corrisponde alla lunghezza di una sequenza.
+
+Come fatto notare da Alon et al., [1], la stima di $F_1$ può essere fatta utilizzando un algoritmo randomizzato utilizzando O(log log m) bit di memoria.
+
+
+l'implementazione per k=1 è banale e necessita solamente di una memoria che cresce logaritmicamente. Questo accade in quanto, per come è definito X, è necessario avere un contatore su m per calcolare il numero della lunghezza di uno stream.
+
+Per introdurre il fattore di randomicità si può usare la seguente implementazione:
+```c
+#include <stdlib.h>
+unsigned int seed = 3454256;
+srand(seed); 
+
+int m = 1;
+
+sprintf(formato_input, "%%d%c", separatore);
+    
+t_0 = clock();
+while (fscanf(file, formato_input, &a_i) == 1){
+  double p_i = (double)rand() / RAND_MAX;
+  if (rand_num < 1.0 / m) { 
+    if (a_i >= 0 && a_i <= INT_MAX) { // se l'elemento è valido
+        m++;
+    } else {
+        printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
+    }
+  }
+}
+
+t_f = clock();
+
+```
+
 
 ## Stream generator
 Per generare lo stream utilizzato in questo lavoro è stato implementato in C++ un generatore di numeri pseudo-casuali. Questo generatore, disponibile nella directory "stream_generator", si occupa inoltre del salvataggio dello stream in formato CSV, con possibilità di salvare l'output anche altre estensioni.
@@ -354,6 +388,7 @@ double poisson(std::default_random_engine& generator, double lambda) {
     }
 ```
 
+# Confronto tra AMS e un implementazione Naive
 
 
 # Bibliografia
