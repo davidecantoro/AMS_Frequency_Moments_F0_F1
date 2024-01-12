@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Guida su come creare un bot telegram: https://linuxscriptshub.com/send-telegram-message-linux-scripts/
+
 source token_bot # File contenente TOKEN 
 source chat_id_bot # File contenente CHAT_ID
 
