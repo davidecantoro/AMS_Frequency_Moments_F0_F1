@@ -109,8 +109,131 @@ AMS_Frequency_Moment_0(A): # A stream
 define z: z=a*x+b
 define r: r calculate number of trailing 0s
 ```
-### Implementazione
+### Input file e premesse
 Lo stream utilizzato è stato generato dal programma "generate_stream" ed è disponibile nella directory "stream_generator".
+
+Per il corretto utilizzo del programma, è necessario fornire un file contenente una serie di numeri interi e non negativi, ciascun numero deve essere disposto su una riga e separata da un punto e virgola. È inoltre disponibile uno script denominato "pulizia_stream.sh" che consente la rimozione di tutti i caratteri ad esclusione dei caratteri non numerisci e del carattere separatore.
+
+Per semplificare la compilazione del programma, è stato progettato un Makefile. Basta eseguire il comando "make" per compilare tutto in automatico, inoltre è possibile eseguire il comando "make clean" per rimuovere tutti gli eseguibili.
+
+Esempio del formato del file di input:
+```
+11;
+11;
+19;
+97;
+8;
+52;
+54;
+```
+
+
+#### Script di Pulizia (pulizia_stream.sh)
+Lo script di pulizia è stato pensato per facilitare la fase preliminare della preparazione del file di input.
+
+Uso dello script: ./pulizia_stream.sh [file_input] [file_output]
+- Se non vengono passati argomenti, verranno utilizzati dei valori di default per file_input e file_output
+- Se viene passato un solo argomento, verrà usato lo stesso argomento sia come file_input che come file_output
+- Se vengono passati due argomenti, verranno utilizzati come file_input e file_output rispettivamente
+- Viene inoltre effettuato un controllo sul numero di argomenti, il numero degli argomenti deve essere <= 2
+
+### Output
+Il programma offre diverse opzioni di output:
+- Stampa a schermo dei risultati, è possibile disabilitare questa opzione
+- Salvataggio in un file in formato csv
+
+AVVERTENZA: Il programma non crea automaticamente il file csv su cui salvare i risultati, pertanto bisogna assicurarsi dell'effettiva presenza del file.
+
+L'output del programma consiste in una rappresentazione eelle seguenti variabili: stima del momento di ordine 0 e tempo di esecuzione in secondi dell'algoritmo.
+
+File csv:
+```
+algoritmo,stima,esecuzione
+ams,128,0.000093
+```
+Output del terminale:
+```
+AMS Frequency Moments - momento di ordine 0
+Distinct item stimati: 128
+Tempo di esecuzione: 0.000087 [s]
+```
+
+
+### Usage
+Il programma dispone di un opzione di usage, richiamabile tramite l'opzione -h, che stampa il seguente messaggio.
+```
+Utilizzo: ./ams_f0 [-f nome_file] [-p path] [-o output_file] [-d path_output_file] [-s separatore] [-q] [-h]
+Il seguente programma utilizza l'algoritmo AMS per stimare calcolare il numero di F0, il risultato verrà poi salvato in un file in formato CSV.
+Le opzioni disponibili sono le seguenti:
+  -h                   Messaggio di aiuto
+  -f nome_file         Permette di specificare il nome del file da utilizzare per il calcolo di F0.
+  -p path              Permette di specificare il percorso del file da utilizzare per il calcolo di F0.
+  -o output_file       Permette di specificare il nome del file da utilizzare per salvare i risultati.
+  -d output_path       Permette di specificare il percorso in cui si trova il file di output.
+  -s separatore        Permette di specificare il carattere di separazione degli elementi utilizzati nel file di input.
+  -q                   L'opzione quiet permette di sopprimere l'output a schermo.
+ATTENZIONE: Il programma non crea in automatico il file di output, quindi bisogna assicurarsi in anticipo della sua presenza.
+```
+
+
+### Implementazione
+La libreria getopt è stata utilizzata in modo da permettere l'utilizzo delle opzioni.
+
+La funzione err_sys è stata implementata per gestire gli errori. Tale funzione ha lo scopo di mostrare a schermo un messaggio di errore descrittivo e di terminare l'esecuzione del programma.
+
+```c
+sprintf(formato_input, "%%d%c", separatore);
+t_0 = clock();
+
+while (fscanf(file, formato_input, &a_i) == 1){   // lettura per riga
+    if (a_i >= 0 && a_i <= INT_MAX) {     //  controllo validità valore
+        z_i = z_hash(a, a_i, b);
+        r_i = trailing_0s(z_i);
+        R = max(R,r_i);
+    } else {
+        printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
+    }
+}
+
+t_f = clock();
+delta_t = ((double) (t_f - t_0) / CLOCKS_PER_SEC);  // tempo di esecuzione in secondi
+distinct_item_estimate = 1 << R;    // elevamento a potenza usando shift a sinistra di R posizioni
+```
+Per il calcolo di $2^R$ si è utilizzato lo shift a sinistra, invece dell'utilizzo della libreria math. Questa opzione è stato resa possibile in quanto R è un numero intero (non negativo) e distinct_item_estimate è una potenza di due.
+
+
+#### Controllo input utente
+Per il controllo dell'input inserito da utente è stato fatto uso delle espressioni regolari in modo da limitare i caratteri inseribili.
+
+Espressione regolare per i filename: ```"^[a-zA-Z0-9_.-\\ ]+$"```
+Espressione regolare per i path: ```"^[a-zA-Z0-9_.-/\\ ]+$"```
+```c
+// utilizzo di strncpy per limitare i caratteri
+strncpy(filename, optarg, MAXLENGTH - 1);
+filename[MAXLENGTH - 1] = '\0';
+
+// compilazione espressione
+int result_compilazione_f = regcomp(&regex_function_filename, regex_filename, REG_EXTENDED);
+if (result_compilazione_f) {
+  char error_mex[20],error_mex_output[100];
+  regerror(result_compilazione_f, &regex_function_filename, error_mex, sizeof(error_mex));
+  sprintf(error_mex_output, "Errore durante la compilazione della regex per il filename: %s\t", error_mex);
+  regfree(&regex_function_filename);
+  err_sys(error_mex_output);
+}
+
+// controllo espressione regolare
+int result_controllo_regex_f = regexec(regex_function_filename, optarg, 0, NULL, 0);
+if (result_controllo_regex_f){
+ char error_mex[20],error_mex_output[100];
+ regerror(result_controllo_regex_f, regex_function_filename, error_mex, sizeof(error_mex));
+ sprintf(error_mex_output, "Errore durante il controllodella regex per il filename: %s\t", error_mex);
+ regfree(&regex_function_filename);
+ err_sys(error_mex_output);
+}
+
+regfree(&regex_function_filename);  // libero memoria filename regex
+```
 
 #### Trailing 0s
 La seguente implementazione in c calcola il numero di trailing 0s di un dato numero in input.

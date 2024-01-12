@@ -323,6 +323,12 @@ int main(int argc, char *argv[]) {
         printf("Errore: Impossibile aprire il file.\t");
         return 1;
     }
+
+    FILE* file_output = fopen(fullpath_output, "w");
+    if (file_output == NULL) {
+        fclose(file);
+        err_sys("Errore: Impossibile aprire il file di output.\t");
+    }
     
 
 
@@ -386,10 +392,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    FILE* file_output = fopen(fullpath_output, "w");
-    if (file_output == NULL) {
-        err_sys("Errore: Impossibile aprire il file di output.\t");
-    }
+    
 
     
     // salvataggio sul file di output
@@ -401,7 +404,6 @@ int main(int argc, char *argv[]) {
     /*
             DA FARE
             - commenti e pulizia codice
-            - modificare README.md
     */
     
     return 0;

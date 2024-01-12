@@ -267,6 +267,12 @@ int main(int argc, char *argv[]) {
 
     }
 
+    FILE* file_output = fopen(fullpath_output, "w");
+    if (file_output == NULL) {
+        fclose(file);
+        err_sys("Errore: Impossibile aprire il file di output.\t");
+    }
+
 
     t_0 = clock();
 
@@ -323,10 +329,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    FILE* file_output = fopen(fullpath_output, "w");
-    if (file_output == NULL) {
-        err_sys("Errore: Impossibile aprire il file di output.\t");
-    }
+    
 
     
     // salvataggio sul file di output
