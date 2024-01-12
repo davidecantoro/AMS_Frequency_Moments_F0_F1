@@ -387,6 +387,8 @@ double poisson(std::default_random_engine& generator, double lambda) {
         }
     }
 ```
+# Simulazione
+- aggiunta di un bot telegram che mandi update costantemente
 
 # Confronto tra AMS e un implementazione Naive
 
