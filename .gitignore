@@ -1,2 +1,5 @@
 # .gitignore
-telegram_bot.sh
+
+# setting bot telegram
+token_bot
+chat_id_bot
