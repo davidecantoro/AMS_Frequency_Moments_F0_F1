@@ -267,6 +267,13 @@ int main(int argc, char *argv[]) {
 
     }
 
+
+    if (strlen(path_output) + strlen(filename_output) < 2*MAXLENGTH) {
+        snprintf(fullpath_output, 2*MAXLENGTH, "%s%s", path_output, filename_output);
+    } else {
+        err_sys("Errore: Il percorso completo del file di output è troppo lungo");
+    }
+
     FILE* file_output = fopen(fullpath_output, "w");
     if (file_output == NULL) {
         fclose(file);
@@ -322,11 +329,7 @@ int main(int argc, char *argv[]) {
         printf("Tempo di esecuzione: %f [s]\n",delta_t);
     }
     
-    if (strlen(path_output) + strlen(filename_output) < 2*MAXLENGTH) {
-        snprintf(fullpath_output, 2*MAXLENGTH, "%s%s", path_output, filename_output);
-    } else {
-        err_sys("Errore: Il percorso completo del file di output è troppo lungo");
-    }
+    
 
 
     

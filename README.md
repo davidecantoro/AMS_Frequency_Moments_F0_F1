@@ -75,7 +75,7 @@ AMS_Frequency_Moment(A, k): # A stream, k moment order
 
 
 
-## Estimation of $F_0$
+## Momento di ordine 0: $F_0$
 
 Il paper di Alon et al., [1] propone una modifica all'algoritmo Flajolet-Martin proposto da Flajolet et al., [2] per calcolare il momento di ordine 0. Questa implementazione utilizza un algoritmo randomico, la randomicità è introdotta dall'uso della funzione $z_i$, l'uso di un algoritmo randomico è particolarmente importante in quanto permette di usare solo O(log n) bit di memoria.
 
@@ -267,12 +267,12 @@ int z_hash(int a, int x, int b) {
 ## Momento di ordine 1: $F_1$
 Il momento di ordine k pari a 1, corrisponde alla lunghezza di una sequenza.
 
-Come fatto notare da Alon et al., [1], la stima di $F_1$ può essere fatta utilizzando un algoritmo randomizzato utilizzando O(log log m) bit di memoria.
+Come evidenziato da Alon et al., [1], la stima di $F_1$ può essere effettuata utilizzando un algoritmo randomizzato utilizzando O(log log m) bit di memoria.
 
 
-l'implementazione per k=1 è banale e necessita solamente di una memoria che cresce logaritmicamente. Questo accade in quanto, per come è definito X, è necessario avere un contatore su m per calcolare il numero della lunghezza di uno stream.
+Per come è definito X, è necessario avere solo un contatore su m per calcolare il numero della lunghezza di uno stream.
 
-Per introdurre il fattore di randomicità si può usare la seguente implementazione:
+Per introdurre il fattore di randomicità, è possibile utilizzare la segenute implementazione:
 ```c
 #include <stdlib.h>
 unsigned int seed = 3454256;
