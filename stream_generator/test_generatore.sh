@@ -8,7 +8,7 @@ distribuzioni=("uniforme" "esponenziale" "poisson")
 #distribuzioni=("poisson")
 
 # Array dei parametri lambda
-lambdas=(0.1 5.0 10.0)
+lambdas=(1.0 0.1 5.0 10.0)
 
 # Array dei limiti per la distribuzione uniforme
 limiti_inferiori=(0.0 0.5 1.0)
