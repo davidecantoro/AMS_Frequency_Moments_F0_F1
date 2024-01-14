@@ -55,6 +55,9 @@ int main(int argc, char *argv[]) {
     char resto_input[MAXLENGTH] = "";
     float a_f = 0.0f;
     std::regex filename_regex("^[\\w._,-]+$");
+    char buffer_b[MAXLENGTH];
+    char buffer_a[MAXLENGTH];
+    char buffer_l[MAXLENGTH];
 
     // --- PARAMETRI DI DEFAULT ---
     Distribuzione distribuzione = UNIFORME;
@@ -89,24 +92,50 @@ int main(int argc, char *argv[]) {
                 }
                 break;
             case 'l':
-                sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
-                if (sscanf(optarg, formato_input, &lambda, resto_input) != 1 || lambda < 0.0f || lambda > FLT_MAX || resto_input[0] != '\0') {
-                    err_sys("Errore: Non hai inserito un numero float positivo\t");
+
+                strncpy(buffer_l, optarg, sizeof(buffer_l) - 1);
+                buffer_l[sizeof(buffer_l) - 1] = '\0'; 
+
+                snprintf(formato_input, sizeof(formato_input), "%%f%%s");
+
+                if (sscanf(buffer_l, formato_input, &b, resto_input) != 1 || lambda < 0.0f || lambda > FLT_MAX || resto_input[0] != '\0') {
+                    err_sys("Errore: Non hai inserito un numero float positivo per lambda\t");
                 }
+                sscanf(buffer_l, "%lf", &lambda);
+ 
                 break;
 
             case 'a':
-                sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
-                if (sscanf(optarg, formato_input, &a, resto_input) != 1 || a < 0.0f || a > FLT_MAX || resto_input[0] != '\0') {
+
+                char buffer_a[MAXLENGTH];
+                strncpy(buffer_a, optarg, sizeof(buffer_a) - 1);
+                buffer_a[sizeof(buffer_a) - 1] = '\0'; 
+
+                snprintf(formato_input, sizeof(formato_input), "%%f%%s");
+
+                if (sscanf(buffer_a, formato_input, &a, resto_input) != 1 || a < 0.0f || a > FLT_MAX || resto_input[0] != '\0') {
                     err_sys("Errore: Non hai inserito un numero float positivo per a\t");
                 }
+                sscanf(buffer_a, "%lf", &a);
+
                 break;
             case 'b':
-                sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
-                if (sscanf(optarg, formato_input, &b, resto_input) != 1 || b <= a || b < 0.0f || b > FLT_MAX || resto_input[0] != '\0') {
+
+
+                strncpy(buffer_b, optarg, sizeof(buffer_b) - 1);
+                buffer_b[sizeof(buffer_b) - 1] = '\0'; 
+
+
+                //sprintf(formato_input, "%%f%%%ds", MAXLENGTH-1);
+                snprintf(formato_input, sizeof(formato_input), "%%f%%s");
+
+                if (sscanf(buffer_b, formato_input, &b, resto_input) != 1 || b <= a || b < 0.0f || b > FLT_MAX || resto_input[0] != '\0') {
                     err_sys("Errore: Non hai inserito un numero float positivo per b oppure b non valido\t");
                 }
+                sscanf(buffer_b, "%lf", &b);
+
                 break;
+                
 
             case 'n':
                 sprintf(formato_input, "%%d%%%ds", MAXLENGTH-1);
@@ -129,6 +158,8 @@ int main(int argc, char *argv[]) {
                 if (sscanf(optarg, formato_input, &x, resto_input) != 1 || x < 0 || x > INT_MAX || resto_input[0] != '\0') {
                     err_sys("Errore: Non hai inserito un numero intero positivo per n\t");
                 }
+
+
                 break;
             case 'e':
             if (strlen(optarg) < MAXLENGTHEXTENSION) {
@@ -168,7 +199,6 @@ int main(int argc, char *argv[]) {
     if (!file) {
         err_sys("Errore: Impossibile aprire il file\t");
     }
-
 
 
     // --- GENERAZIONE STREAM ---

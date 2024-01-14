@@ -10,7 +10,7 @@
 
 
 #define MAXLENGTHSTREAM 20
-#define MAXLENGTH 50
+#define MAXLENGTH 100
 
 void err_sys(const char* x) {   // gestione del messaggio di errore con uscita forzata
     errno = 1;      //: Operation not permitted

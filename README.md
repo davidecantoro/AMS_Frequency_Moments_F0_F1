@@ -389,6 +389,9 @@ double poisson(std::default_random_engine& generator, double lambda) {
 ```
 # Simulazione
 - aggiunta di un bot telegram che mandi update costantemente
+- script generazione dei file di input
+- Generazione file di input terminata in 6 secondi
+- Esecuzione degli algoritmi terminata in 16 secondi
 
 # Confronto tra AMS e un implementazione Naive
 

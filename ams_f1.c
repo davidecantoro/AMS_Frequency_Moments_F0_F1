@@ -12,7 +12,7 @@
 #include <regex.h>      // libreria per implementare le regex
 
 #define MAXLENGTHSTREAM 20
-#define MAXLENGTH 50
+#define MAXLENGTH 100
 
 void err_sys(const char* x) { 
     errno = 1;      //: Operation not permitted
