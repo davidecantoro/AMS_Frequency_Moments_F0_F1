@@ -20,16 +20,21 @@ do
   for algoritmo in ${algoritmi[@]}; do
     echo "Esecuzione $algoritmo per il file $file_name_input"
     temp_file=$(mktemp)
-    echo "algoritmo,stima,esecuzione,cpu_percent,max_RSS,max_RSS_unit" > $temp_file
+    echo "momento,distribuzione,algoritmo,stima,esecuzione,cpu_percent,max_RSS,max_RSS_unit" > $temp_file
+
     for ((n=1; n<=numero_esecuzioni; n++)); do
       
       output=$(/usr/bin/time -v ./$algoritmo -f $file_name_input -p $simulazioni_path/ -o ${algoritmo}_$file_name_input -d $output_path -q 2>&1)
       
-      cpu_percent=$(echo "$output" | grep 'Percent of CPU' | awk -F': ' '{print $2}')
+      cpu_percent=$(echo "$output" | grep 'Percent of CPU' | awk -F': ' '{print $2}' | tr -d '%')
       max_resident=$(echo "$output" | grep 'Maximum resident' | awk -F': ' '{print $2}') 
       max_resident_unit=$(echo "$output" | grep 'Maximum resident' | awk -F'\\(' '{print $2}'| awk -F'\\)' '{print $1}')
 
-      echo "$(tail -n +2 ${output_path}${algoritmo}_${file_name_input}),${cpu_percent},${max_resident},${max_resident_unit}" >> $temp_file
+      #nome_algoritmo=$(echo $algoritmo | cut -d'_' -f 1)
+      momento=$(echo $algoritmo | cut -d'_' -f 2)
+      distribuzione=$(echo $file_name_input | cut -d'_' -f 1)
+
+      echo "${momento},${distribuzione},$(tail -n +2 ${output_path}${algoritmo}_${file_name_input}),${cpu_percent},${max_resident},${max_resident_unit}" >> $temp_file
     done
     mv $temp_file ${output_path}${algoritmo}_${file_name_input}
 
