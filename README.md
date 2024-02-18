@@ -448,6 +448,64 @@ Le opzioni disponibili sono le seguenti:
 ATTENZIONE: Il programma non crea in automatico il file di output, quindi bisogna assicurarsi in anticipo della sua presenza.
 ```
 
+# Migliorare la stima di $F_k$
+Come fatto notare da Alon et al. [1], si ha che $E(X) = ∑_{i=1}^n m_i^k = F_k$ .
+Di conseguenza si potrebbe pensare di andare a eseguire gli algoritmi *ams_f0* e *ams_f1* un numero prefissato di volte e andare a considerarne la media in modo da avere una stima più accurata, questa operazione però è più onerosa di risorse e non è applicabile a grandi stream in quanto è più onerosa in termini di tempo e risorse.
+L'implementazione per $k=0$ e per $k=1$ è la seguente.
+## Implementazione per $F_0$
+```c
+for(int i = 0; i < n; i++) {
+
+  while (fscanf(file, formato_input, &a_i) == 1){   // lettura per riga
+      t_0 = clock();
+      if (a_i >= 0 && a_i <= INT_MAX) {     //  controllo validità valore
+          z_i = z_hash(a, a_i, b);
+          r_i = trailing_0s(z_i);
+          R = max(R,r_i);
+      } else {
+          printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
+      }
+      t_f = clock();
+}
+  
+  delta_t = delta_t + ((double) (t_f - t_0) / CLOCKS_PER_SEC);;  // tempo di esecuzione in secondi
+  distinct_item_estimate = 1 << R;    // elevamento a potenza usando shift a sinistra di R posizioni
+  sum_distinct_item_estimate += distinct_item_estimate;
+
+}
+double average_distinct_item_estimate = sum_distinct_item_estimate / n; //stima di F_k
+
+```
+
+## Implementazione per $F_1$
+```c
+#include <stdlib.h>
+unsigned int seed = 3454256;
+srand(seed); 
+
+for(int i = 0; i < n; i++) {
+  int m = 1;
+  sprintf(formato_input, "%%d%c", separatore);
+      
+  while (fscanf(file, formato_input, &a_i) == 1){
+    t_0 = clock();
+    double p_i = (double)rand() / RAND_MAX;
+    if (rand_num < 1.0 / m) { 
+      if (a_i >= 0 && a_i <= INT_MAX) { // se l'elemento è valido
+          m++;
+      } else {
+          printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
+      }
+    }
+    sum_m += m;
+    t_f = clock();
+  }
+
+  delta_t = delta_t + ((double) (t_f - t_0) / CLOCKS_PER_SEC);;  // tempo di esecuzione in secondi
+}
+double average_m = sum_m / n; //stima di F_k
+
+```
 
 
 # Simulazione

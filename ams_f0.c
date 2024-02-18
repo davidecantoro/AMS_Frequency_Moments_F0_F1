@@ -299,7 +299,7 @@ int main(int argc, char *argv[]) {
     snprintf(formato_input, MAXLENGTHSTREAM, "%%d%c", separatore);
 
 
-
+//
 
 
 

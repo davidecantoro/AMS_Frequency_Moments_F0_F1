@@ -227,7 +227,8 @@ int main(int argc, char *argv[]) {
                     separatore = optarg[0];
                     break;
                 case 'n':   // iterazioni
-                    sprintf(formato_input_n, "%%d%%%ds", MAXLENGTH-1);
+                    snprintf(formato_input_n, MAXLENGTHINT, "%%d%%%ds", MAXLENGTH-1);
+
                     if (sscanf(optarg, formato_input_n, &n, resto_input_n) != 1 || n < 0 || n > INT_MAX || resto_input_n[0] != '\0') {
                         err_sys("Errore: Non hai inserito un numero intero positivo per n\t");
                     }
@@ -275,6 +276,7 @@ int main(int argc, char *argv[]) {
 
     for(int i = 0; i < n; i++) {
         
+        
     snprintf(formato_input, MAXLENGTHSTREAM, "%%d%c", separatore);
 
 
@@ -295,7 +297,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    sprintf(formato_input, "%%d%c", separatore);
+    snprintf(formato_input, MAXLENGTHSTREAM, "%%d%c", separatore);
+
     
     
     while (fscanf(file, formato_input, &a_i) == 1){
@@ -361,7 +364,7 @@ int main(int argc, char *argv[]) {
     fprintf(file_output, "ams,%.2f,%f\n", average_distinct_item_estimate, delta_t);
     fclose(file_output);
     
-
+//
     /*
             DA FARE
             - commenti e pulizia codice

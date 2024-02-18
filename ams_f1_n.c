@@ -13,6 +13,7 @@
 
 #define MAXLENGTHSTREAM 20
 #define MAXLENGTH 100
+#define MAXLENGTHINT 15
 
 void err_sys(const char* x) { 
     errno = 1;      //: Operation not permitted
@@ -40,6 +41,8 @@ int main(int argc, char *argv[]) {
     char filename[MAXLENGTH] = "stream.csv";
     char path[MAXLENGTH] = "stream_generator/";
     char fullpath[2*MAXLENGTH] = "";
+    char formato_input_n[MAXLENGTHINT];
+    char resto_input_n[MAXLENGTHINT];
     int opt;
     int n=1000;
 
@@ -56,7 +59,7 @@ int main(int argc, char *argv[]) {
 
 
     // ---  OPZIONI ---
-    while ((opt = getopt(argc, argv, "f:p:s:o:d:qh")) != -1) {
+    while ((opt = getopt(argc, argv, "f:p:s:o:d:n:qh")) != -1) {
             switch (opt) {
                 case 'f':   // file name
 
@@ -234,8 +237,15 @@ int main(int argc, char *argv[]) {
                 case 'q':   // quiet, se attivato non stampa l'output
                     quiet = true;
                     break;
+                case 'n':   // iterazioni
+                    snprintf(formato_input_n, MAXLENGTHINT, "%%d%%%ds", MAXLENGTH-1);
+                    if (sscanf(optarg, formato_input_n, &n, resto_input_n) != 1 || n < 0 || n > INT_MAX || resto_input_n[0] != '\0') {
+                        err_sys("Errore: Non hai inserito un numero intero positivo per n\t");
+                    }
+                    //n = optarg[0];
+                    break;
                 case 'h':
-                    printf("Utilizzo: ./ams_f1 [-f nome_file] [-p path] [-o output_file] [-d path_output_file] [-s separatore] [-q] [-h]\n"
+                    printf("Utilizzo: ./ams_f1 [-f nome_file] [-p path] [-o output_file] [-d path_output_file] [-s separatore] [-q] [-h] [-n iterazioni]\n"
                             "Il seguente programma utilizza l'algoritmo AMS per stimare calcolare il numero di F0, il risultato verrà poi salvato in un file in formato CSV.\n"
                             "Le opzioni disponibili sono le seguenti:\n"
                             "  -h                   Messaggio di aiuto\n"
@@ -245,6 +255,7 @@ int main(int argc, char *argv[]) {
                             "  -d output_path       Permette di specificare il percorso in cui si trova il file di output.\n"
                             "  -s separatore        Permette di specificare il carattere di separazione degli elementi utilizzati nel file di input.\n"
                             "  -q                   L'opzione quiet permette di sopprimere l'output a schermo.\n"
+                            "  -n iterazioni        Permette di specificare il nuemro di iterazioni per stimare F_0. Default = 1000\n"
                             "ATTENZIONE: Il programma non crea in automatico il file di output, quindi bisogna assicurarsi in anticipo della sua presenza.\n");
 
                     return 0;
