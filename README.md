@@ -77,8 +77,123 @@ AMS_Frequency_Moment(A, k): # A stream, k moment order
 
 ```
 
+## Input file e premesse
+Lo stream utilizzato dai programmi *ams_f0* ed *ams_f1* è stato generato dal programma "generate_stream" ed è disponibile nella directory "stream_generator".
+
+Per il corretto utilizzo dei programmi *ams_f0* ed *ams_f1*, è necessario fornire un file di input contenente una serie di numeri interi e non negativi, ciascun numero deve essere disposto su una riga e separata da un punto e virgola. È inoltre disponibile uno script denominato "pulizia_stream.sh" che consente la rimozione di tutti i caratteri ad esclusione dei caratteri non numerisci e del carattere separatore.
+
+Esempio del formato del file di input:
+```
+11;
+11;
+19;
+97;
+8;
+52;
+54;
+```
+
+Per semplificare la compilazione del programma, è stato progettato un **Makefile**. Basta eseguire il comando "make" per compilare tutto in automatico, inoltre è possibile eseguire il comando "make clean" per rimuovere tutti gli eseguibili.
 
 
+
+## Script di Pulizia (pulizia_stream.sh)
+Lo script di pulizia è stato pensato per facilitare la fase preliminare della preparazione del file di input.
+
+Uso dello script: ./pulizia_stream.sh [file_input] [file_output]
+- Se non vengono passati argomenti, verranno utilizzati dei valori di default per file_input e file_output
+- Se viene passato un solo argomento, verrà usato lo stesso argomento sia come file_input che come file_output
+- Se vengono passati due argomenti, verranno utilizzati come file_input e file_output rispettivamente
+- Viene inoltre effettuato un controllo sul numero di argomenti, il numero degli argomenti deve essere <= 2
+
+## Stream generator
+Per generare lo stream utilizzato in questo lavoro è stato implementato in C++ un **generatore di numeri pseudo-casuali**. Questo generatore, disponibile nella directory "stream_generator", si occupa inoltre del salvataggio dello stream in formato CSV, con possibilità di salvare l'output anche altre estensioni.
+
+Nella stessa directory sono presenti due script di utility scritti in bash: "test_generatore.sh" e "controllo_input.sh". Questi script hanno lo scopo di testare le combinazioni di input disponibili, verificando sia il corretto funzionamento delle opzioni disponibili che il corretto funzionamento dei meccanismi di controllo dell'input inserito da utente.
+
+Un **Makefile** è disponibile per semplificare la compilazione del programma.
+
+Le distribuzioni implementate per generare numeri pseudo-casualmente sono:
+- uniforme
+- esponenziale
+- poisson
+
+### Usage
+Il programma dispone di un opzione di usage, richiamabile tramite l'opzione -h, che stampa il seguente messaggio.
+```
+Utilizzo: ./generate_stream [-d distribuzione] [-l lambda] [-a min] [-b max] [-n lunghezza] [-f file]
+Il seguente programma genera uno stream di numeri pseudo-casuali, salvando il risultato in un file in formato CSV.
+ATTENZIONE: Il seguente programma fornisce in output un file CSV di numeri interi, quindi per conservare le cifre decimali bisogna utilizzare l'opzione x
+Le opzioni disponibili sono le seguenti:
+  -h                Messaggio di aiuto
+  -d distribuzione  Permette di specificare una distribuzione da usare: uniforme, esponenziale, poisson. Default = uniforme
+  -l lambda         Permette di specificare il parametro lambda usato per le distribuzioni esponenziale e Poisson. Default = 10
+  -a min            Permette di specificare il limite inferiore per la distribuzione uniforme. Default = 0
+  -b max            Permette di specificare il limite superiore per la distribuzione uniforme. Default = 100
+  -n lunghezza      Permette di specificare la lunghezza dello stream. Default = 200
+  -x cifre          Permette di specificare il numero di cifre decimali da mantenere. Default = 0
+  -f file           Permette di specificare il nome del file CSV fino ad un massimo di 49 caratteri. Default = stream
+  -e estensione     Permette di specificare l'estensione del file fino ad un massimo di 4 caratteri. Default = CSV
+  NOTA - caratteri non accettati: spazi, stringhe vuote, stringhe con solo spazi, caratteri speciali diversi da virgola, trattino e punto
+```
+
+### Implementazione
+La libreria getopt è stata utilizzata in modo da permettere l'utilizzo delle opzioni.
+
+La funzione err_sys è stata implementata per gestire gli errori. Tale funzione ha lo scopo di mostrare a schermo un messaggio di errore descrittivo e di terminare l'esecuzione del programma.
+
+Le funzioni "uniforme" e "esponenziale" sono state adattate per generare numeri interi. Il numero generato viene moltiplicato per $10^x$, dove $x$ è uno dei parametri modificabili, e successivamente troncato.
+
+Sono stati eseguiti i seguenti controlli sull'input inserito da utente:
+- dopo i numeri (a, b, lambda, x ed n) non ci siano lettere o caratteri simili
+- la lunghezza dello stream e x siano un numeri interi e positivi
+- a,b e lambda siano numeri decimali positivi
+-  i numeri decimali e interi (a, b, lambda, x e n) siano inferiori al valore massimo possibile.
+- b sia maggiore di a
+- l'input relativo alla distribuzione è troncato per accettare massimo 12 caratteri
+- il nome del file sia più corto di 50 caratteri e che non contenga spazi, stringhe vuote, stringhe con solo spazi e caratteri speciali diversi da virgola, trattino e punto
+- il nome dell'estensione sia più corto di 5 caratteri
+
+Implementazione della generazione dello strem:
+```c
+// ----------------------- PSEUDO NUMBER GENERATOR -----------------------
+int uniforme(std::default_random_engine& generator, double a, double b, int x) {
+    std::uniform_real_distribution<double> distribuzione(a, b);
+    double numero = distribuzione(generator);
+    return static_cast<int>(numero * std::pow(10, x));
+}
+
+int esponenziale(std::default_random_engine& generator, double lambda, int x) {
+    std::exponential_distribution<double> distribuzione(lambda);
+    double numero = distribuzione(generator);
+    return static_cast<int>(numero * std::pow(10, x));
+}
+
+
+double poisson(std::default_random_engine& generator, double lambda) {
+    std::poisson_distribution<int> distribuzione(lambda);
+    return distribuzione(generator);
+}
+// -----------------------------------------------------------------------
+```
+
+```c
+    // --- GENERAZIONE STREAM ---
+    for (int i = 0; i < n; i++) {       // nota: fare switch-for oppure for-switch è computazionalmente ininfluente
+        switch (distribuzione) {
+            case UNIFORME:
+                file << uniforme(generator, a, b, x) << "\n";      // genero numero e salvo su file
+                break;
+            case ESPONENZIALE:
+                file << esponenziale(generator, lambda, x) << "\n";
+                break;
+            case POISSON:
+                file << poisson(generator, lambda) << "\n";
+                break;
+     
+        }
+    }
+```
 
 ## Momento di ordine 0: $F_0$
 
@@ -117,34 +232,6 @@ AMS_Frequency_Moment_0(A): # A stream
 define z: z=a*x+b
 define r: r calculate number of trailing 0s
 ```
-### Input file e premesse
-Lo stream utilizzato è stato generato dal programma "generate_stream" ed è disponibile nella directory "stream_generator".
-
-Per il corretto utilizzo dei programmi ams_f0 ed ams_f1, è necessario fornire un file di input contenente una serie di numeri interi e non negativi, ciascun numero deve essere disposto su una riga e separata da un punto e virgola. È inoltre disponibile uno script denominato "pulizia_stream.sh" che consente la rimozione di tutti i caratteri ad esclusione dei caratteri non numerisci e del carattere separatore.
-
-Esempio del formato del file di input:
-```
-11;
-11;
-19;
-97;
-8;
-52;
-54;
-```
-
-Per semplificare la compilazione del programma, è stato progettato un **Makefile**. Basta eseguire il comando "make" per compilare tutto in automatico, inoltre è possibile eseguire il comando "make clean" per rimuovere tutti gli eseguibili.
-
-
-
-#### Script di Pulizia (pulizia_stream.sh)
-Lo script di pulizia è stato pensato per facilitare la fase preliminare della preparazione del file di input.
-
-Uso dello script: ./pulizia_stream.sh [file_input] [file_output]
-- Se non vengono passati argomenti, verranno utilizzati dei valori di default per file_input e file_output
-- Se viene passato un solo argomento, verrà usato lo stesso argomento sia come file_input che come file_output
-- Se vengono passati due argomenti, verranno utilizzati come file_input e file_output rispettivamente
-- Viene inoltre effettuato un controllo sul numero di argomenti, il numero degli argomenti deve essere <= 2
 
 ### Output
 Il programma offre diverse opzioni di output:
@@ -158,13 +245,13 @@ L'output del programma consiste in una rappresentazione eelle seguenti variabili
 File csv:
 ```
 algoritmo,stima,esecuzione
-ams,128,0.000093
+ams,128,0.000501
 ```
 Output del terminale:
 ```
 AMS Frequency Moments - momento di ordine 0
 Distinct item stimati: 128
-Tempo di esecuzione: 0.000087 [s]
+Tempo di esecuzione: 0.000501 [s]
 ```
 
 
@@ -181,7 +268,7 @@ Le opzioni disponibili sono le seguenti:
   -d output_path       Permette di specificare il percorso in cui si trova il file di output.
   -s separatore        Permette di specificare il carattere di separazione degli elementi utilizzati nel file di input.
   -q                   L'opzione quiet permette di sopprimere l'output a schermo.
-  -n iterazioni        Permette di specificare il nuemro di iterazioni per stimare F_0.
+  -n iterazioni        Permette di specificare il nuemro di iterazioni per stimare F_0. Default = 1000
 ATTENZIONE: Il programma non crea in automatico il file di output, quindi bisogna assicurarsi in anticipo della sua presenza.
 ```
 
@@ -295,115 +382,74 @@ Per introdurre il fattore di randomicità, è possibile utilizzare la segenute i
 unsigned int seed = 3454256;
 srand(seed); 
 
-int m = 1;
-
-sprintf(formato_input, "%%d%c", separatore);
-    
-t_0 = clock();
-while (fscanf(file, formato_input, &a_i) == 1){
-  double p_i = (double)rand() / RAND_MAX;
-  if (rand_num < 1.0 / m) { 
-    if (a_i >= 0 && a_i <= INT_MAX) { // se l'elemento è valido
-        m++;
-    } else {
-        printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
+for(int i = 0; i < n; i++) {
+  int m = 1;
+  sprintf(formato_input, "%%d%c", separatore);
+      
+  while (fscanf(file, formato_input, &a_i) == 1){
+    t_0 = clock();
+    double p_i = (double)rand() / RAND_MAX;
+    if (rand_num < 1.0 / m) { 
+      if (a_i >= 0 && a_i <= INT_MAX) { // se l'elemento è valido
+          m++;
+      } else {
+          printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
+      }
     }
+    sum_m += m;
+    t_f = clock();
   }
-}
 
-t_f = clock();
+  delta_t = delta_t + ((double) (t_f - t_0) / CLOCKS_PER_SEC);;  // tempo di esecuzione in secondi
+}
+double average_m = sum_m / n; //stima di F_k
 
 ```
 
+Come *ams_f0*, anche in questo programma vengono eseguiti gli stessi controlli sull’input dell’utente.
 
-## Stream generator
-Per generare lo stream utilizzato in questo lavoro è stato implementato in C++ un **generatore di numeri pseudo-casuali**. Questo generatore, disponibile nella directory "stream_generator", si occupa inoltre del salvataggio dello stream in formato CSV, con possibilità di salvare l'output anche altre estensioni.
+Per l’implementazione completa, si rimanda al codice completo.
 
-Nella stessa directory sono presenti due script di utility scritti in bash: "test_generatore.sh" e "controllo_input.sh". Questi script hanno lo scopo di testare le combinazioni di input disponibili, verificando sia il corretto funzionamento delle opzioni disponibili che il corretto funzionamento dei meccanismi di controllo dell'input inserito da utente.
 
-Un **Makefile** è disponibile per semplificare la compilazione del programma.
+### Output
+Il programma *ams_f1* offre le medesime opzioni di output di *ams_f0*:
+- Stampa a schermo dei risultati, è possibile disabilitare questa opzione
+- Salvataggio in un file in formato csv
 
-Le distribuzioni implementate per generare numeri pseudo-casualmente sono:
-- uniforme
-- esponenziale
-- poisson
+AVVERTENZA: Il programma non crea automaticamente il file csv su cui salvare i risultati, pertanto bisogna assicurarsi dell'effettiva presenza del file.
 
+L'output del programma consiste in una rappresentazione eelle seguenti variabili: stima del momento di ordine 0 e tempo di esecuzione in secondi dell'algoritmo.
+
+File csv:
+```
+algoritmo,stima,esecuzione
+ams,927.157000,0.000054
+```
+Output del terminale:
+```
+AMS Frequency Moments - momento di ordine 1 
+Lunghezza dello stream stimata: 927.157000
+Tempo di esecuzione: 0.000054 [s]
+```
 ### Usage
 Il programma dispone di un opzione di usage, richiamabile tramite l'opzione -h, che stampa il seguente messaggio.
 ```
-Utilizzo: ./generate_stream [-d distribuzione] [-l lambda] [-a min] [-b max] [-n lunghezza] [-f file]
-Il seguente programma genera uno stream di numeri pseudo-casuali, salvando il risultato in un file in formato CSV.
-ATTENZIONE: Il seguente programma fornisce in output un file CSV di numeri interi, quindi per conservare le cifre decimali bisogna utilizzare l'opzione x
+Utilizzo: ./ams_f1 [-f nome_file] [-p path] [-o output_file] [-d path_output_file] [-s separatore] [-q] [-h] [-n iterazioni]
+Il seguente programma utilizza l'algoritmo AMS per stimare calcolare il numero di F1, il risultato verrà poi salvato in un file in formato CSV.
 Le opzioni disponibili sono le seguenti:
-  -h                Messaggio di aiuto
-  -d distribuzione  Permette di specificare una distribuzione da usare: uniforme, esponenziale, poisson. Default = uniforme
-  -l lambda         Permette di specificare il parametro lambda usato per le distribuzioni esponenziale e Poisson. Default = 10
-  -a min            Permette di specificare il limite inferiore per la distribuzione uniforme. Default = 0
-  -b max            Permette di specificare il limite superiore per la distribuzione uniforme. Default = 100
-  -n lunghezza      Permette di specificare la lunghezza dello stream. Default = 200
-  -x cifre          Permette di specificare il numero di cifre decimali da mantenere. Default = 0
-  -f file           Permette di specificare il nome del file CSV fino ad un massimo di 49 caratteri. Default = stream
-  -e estensione     Permette di specificare l'estensione del file fino ad un massimo di 4 caratteri. Default = CSV
-  NOTA - caratteri non accettati: spazi, stringhe vuote, stringhe con solo spazi, caratteri speciali diversi da virgola, trattino e punto
+  -h                   Messaggio di aiuto
+  -f nome_file         Permette di specificare il nome del file da utilizzare per il calcolo di F1.
+  -p path              Permette di specificare il percorso del file da utilizzare per il calcolo di F1.
+  -o output_file       Permette di specificare il nome del file da utilizzare per salvare i risultati.
+  -d output_path       Permette di specificare il percorso in cui si trova il file di output.
+  -s separatore        Permette di specificare il carattere di separazione degli elementi utilizzati nel file di input.
+  -q                   L'opzione quiet permette di sopprimere l'output a schermo.
+  -n iterazioni        Permette di specificare il nuemro di iterazioni per stimare F_1. Default = 1000
+ATTENZIONE: Il programma non crea in automatico il file di output, quindi bisogna assicurarsi in anticipo della sua presenza.
 ```
 
-### Implementazione
-La libreria getopt è stata utilizzata in modo da permettere l'utilizzo delle opzioni.
-
-La funzione err_sys è stata implementata per gestire gli errori. Tale funzione ha lo scopo di mostrare a schermo un messaggio di errore descrittivo e di terminare l'esecuzione del programma.
-
-Le funzioni "uniforme" e "esponenziale" sono state adattate per generare numeri interi. Il numero generato viene moltiplicato per $10^x$, dove $x$ è uno dei parametri modificabili, e successivamente troncato.
-
-Sono stati eseguiti i seguenti controlli sull'input inserito da utente:
-- dopo i numeri (a, b, lambda, x ed n) non ci siano lettere o caratteri simili
-- la lunghezza dello stream e x siano un numeri interi e positivi
-- a,b e lambda siano numeri decimali positivi
--  i numeri decimali e interi (a, b, lambda, x e n) siano inferiori al valore massimo possibile.
-- b sia maggiore di a
-- l'input relativo alla distribuzione è troncato per accettare massimo 12 caratteri
-- il nome del file sia più corto di 50 caratteri e che non contenga spazi, stringhe vuote, stringhe con solo spazi e caratteri speciali diversi da virgola, trattino e punto
-- il nome dell'estensione sia più corto di 5 caratteri
-
-Implementazione della generazione dello strem:
-```c
-// ----------------------- PSEUDO NUMBER GENERATOR -----------------------
-int uniforme(std::default_random_engine& generator, double a, double b, int x) {
-    std::uniform_real_distribution<double> distribuzione(a, b);
-    double numero = distribuzione(generator);
-    return static_cast<int>(numero * std::pow(10, x));
-}
-
-int esponenziale(std::default_random_engine& generator, double lambda, int x) {
-    std::exponential_distribution<double> distribuzione(lambda);
-    double numero = distribuzione(generator);
-    return static_cast<int>(numero * std::pow(10, x));
-}
 
 
-double poisson(std::default_random_engine& generator, double lambda) {
-    std::poisson_distribution<int> distribuzione(lambda);
-    return distribuzione(generator);
-}
-// -----------------------------------------------------------------------
-```
-
-```c
-    // --- GENERAZIONE STREAM ---
-    for (int i = 0; i < n; i++) {       // nota: fare switch-for oppure for-switch è computazionalmente ininfluente
-        switch (distribuzione) {
-            case UNIFORME:
-                file << uniforme(generator, a, b, x) << "\n";      // genero numero e salvo su file
-                break;
-            case ESPONENZIALE:
-                file << esponenziale(generator, lambda, x) << "\n";
-                break;
-            case POISSON:
-                file << poisson(generator, lambda) << "\n";
-                break;
-     
-        }
-    }
-```
 # Simulazione
 - aggiunta di un bot telegram che mandi update costantemente
 - script generazione dei file di input

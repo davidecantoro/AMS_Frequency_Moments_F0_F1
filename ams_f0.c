@@ -13,8 +13,6 @@
 
 #define MAXLENGTHSTREAM 20
 #define MAXLENGTH 100
-#define MAXLENGTHINT 15
-
 
 void err_sys(const char* x) { 
     errno = 1;      //: Operation not permitted
@@ -66,11 +64,7 @@ int main(int argc, char *argv[]) {
     int a, b;  
     int z_i;
     int R = INT_MIN;    // R =  - inf
-    double sum_distinct_item_estimate = 0;
     int distinct_item_estimate;
-    char formato_input_n[MAXLENGTHINT];
-    char resto_input_n[MAXLENGTHINT];
-    int n = 2000;
 
     // calcolo del tempo
     clock_t t_0, t_f;
@@ -98,32 +92,51 @@ int main(int argc, char *argv[]) {
     char fullpath_output[2*MAXLENGTH] = "";
 
 
+    srand(seed); 
+    a = rand() % 10;  // [0;9]
+    b = rand() % 10;  // [0;9]
+
+
+
     // ---  OPZIONI ---
-    while ((opt = getopt(argc, argv, "f:p:s:o:d:n:qh")) != -1) {
+    while ((opt = getopt(argc, argv, "f:p:s:o:d:qh")) != -1) {
             switch (opt) {
                 case 'f':   // file name
+
                     strncpy(filename, optarg, MAXLENGTH - 1);
                     filename[MAXLENGTH - 1] = '\0';
+
+
+
                     // implementazione espressioni regolari
                     // compilazione espressione
                     int result_compilazione_f = regcomp(&regex_function_filename, regex_filename, REG_EXTENDED);
                     
+
                     if (result_compilazione_f) {    // compilazione regex filename
+
                         char error_mex[20],error_mex_output[100];
                         regerror(result_compilazione_f, &regex_function_filename, error_mex, sizeof(error_mex));
                         sprintf(error_mex_output, "Errore durante la compilazione della regex per il filename: %s\t", error_mex);
+
+
                         regfree(&regex_function_filename);  // libero memoria filename regex
                         err_sys(error_mex_output);
                     }
+
                     // controllo espressione
                     int result_controllo_regex_f = regexec(&regex_function_filename, optarg, 0, NULL, 0);
                     if (result_controllo_regex_f){  // controllo regex
-    
+
+     
                         char error_mex[20],error_mex_output[100];
                         regerror(result_controllo_regex_f, &regex_function_filename, error_mex, sizeof(error_mex));
+
                         sprintf(error_mex_output, "Errore durante il controllo della regex per il filename: %s\t", error_mex);
+
                         regfree(&regex_function_filename);  // libero memoria filename regex
                         err_sys(error_mex_output);
+
                     }
                     
                     regfree(&regex_function_filename);  // libero memoria filename regex
@@ -132,33 +145,54 @@ int main(int argc, char *argv[]) {
                 case 'p':   // path
                     strncpy(path, optarg, MAXLENGTH - 1);
                     path[MAXLENGTH - 1] = '\0';
+
+
+
                     // implementazione espressioni regolari
                     // compilazione espressione
                     int result_compilazione_p = regcomp(&regex_function_path, regex_path, REG_EXTENDED);
                     
+
                     if (result_compilazione_p) {    // compilazione regex path
+
                         char error_mex[20], error_mex_output[100];
                         regerror(result_compilazione_p, &regex_function_path, error_mex, sizeof(error_mex));
                         sprintf(error_mex_output, "Errore nella compilazione dell'espressione regolare: %s\t", error_mex);
+
+
                         regfree(&regex_function_path);  // libero memoria path regex
                         err_sys(error_mex_output);
                     }
+
                     // controllo espressione
                     int result_controllo_regex_p = regexec(&regex_function_path, optarg, 0, NULL, 0);
                     if (result_controllo_regex_p){  // controllo regex
-    
+
+     
                         char error_mex[20], error_mex_output[100];
                         regerror(result_controllo_regex_p, &regex_function_path, error_mex, sizeof(error_mex));
                         sprintf(error_mex_output, "Errore durante il controllo della regex per il path: %s\t", error_mex);
+
+
+
                         regfree(&regex_function_path);  // libero memoria path regex
                         err_sys(error_mex_output);
+
                     }
                     
                     regfree(&regex_function_path);  // libero memoria path regex
+
+
                     break;
+
                 case 'o':   // file di output
+
+
                     strncpy(filename_output, optarg, MAXLENGTH - 1);
                     filename_output[MAXLENGTH - 1] = '\0';
+
+
+
                     // implementazione espressioni regolari
                     // compilazione espressione
                     int result_compilazione_o = regcomp(&regex_function_filename, regex_filename, REG_EXTENDED);
@@ -174,11 +208,12 @@ int main(int argc, char *argv[]) {
                         regfree(&regex_function_filename);  // libero memoria filename regex
                         err_sys(error_mex_output);
                     }
+
                     // controllo espressione
                     int result_controllo_regex_o = regexec(&regex_function_filename, optarg, 0, NULL, 0);
                     if (result_controllo_regex_o){  // controllo regex
                         
-    
+     
                         char error_mex[20], error_mex_output[100];
                         regerror(result_controllo_regex_o, &regex_function_filename, error_mex, sizeof(error_mex));
                         
@@ -186,7 +221,9 @@ int main(int argc, char *argv[]) {
                         
                         regfree(&regex_function_filename);  // libero memoria filename regex
                         err_sys(error_mex_output);
+
                     }
+
                     regfree(&regex_function_filename);  // libero memoria filename regex
                     
                     break;
@@ -194,50 +231,54 @@ int main(int argc, char *argv[]) {
                 case 'd':   // path file di output
                     strncpy(path_output, optarg, MAXLENGTH - 1);
                     path_output[MAXLENGTH - 1] = '\0';
+
+
+
                     // implementazione espressioni regolari
                     // compilazione espressione
                     int result_compilazione_d = regcomp(&regex_function_path, regex_filename, REG_EXTENDED);
                                         
+
                     if (result_compilazione_d) {    // compilazione regex path
+
                         char error_mex[20], error_mex_output[100];
                         regerror(result_compilazione_d, &regex_function_path, error_mex, sizeof(error_mex));
                         sprintf(error_mex_output, "Errore durante la compilazione della regex per il path di output: %s\t", error_mex);
                         
+
                         regfree(&regex_function_path);  // libero memoria path regex
                         err_sys(error_mex_output);
                     }
+
                     // controllo espressione
                     int result_controllo_regex_d = regexec(&regex_function_path, optarg, 0, NULL, 0);
                     if (result_controllo_regex_d){  // controllo regex
                         
-    
+     
                         char error_mex[20], error_mex_output[100];
                         regerror(result_controllo_regex_d, &regex_function_path, error_mex, sizeof(error_mex));
                         sprintf(error_mex_output, "Errore durante il controllo della regex per il path di output: %s\t", error_mex);
                         
+
+
                         regfree(&regex_function_path);  // libero memoria path regex
                         err_sys(error_mex_output);
                     
                     }
+
                     regfree(&regex_function_path);  // libero memoria path regex
                     
                     
                     break;
+
                 case 's':   // separatore
                     separatore = optarg[0];
-                    break;
-                case 'n':   // iterazioni
-                    sprintf(formato_input_n, "%%d%%%ds", MAXLENGTH-1);
-                    if (sscanf(optarg, formato_input_n, &n, resto_input_n) != 1 || n < 0 || n > INT_MAX || resto_input_n[0] != '\0') {
-                        err_sys("Errore: Non hai inserito un numero intero positivo per n\t");
-                    }
-                    //n = optarg[0];
                     break;
                 case 'q':   // quiet, se attivato non stampa l'output
                     quiet = true;
                     break;
                 case 'h':
-                    printf("Utilizzo: ./ams_f0 [-f nome_file] [-p path] [-o output_file] [-d path_output_file] [-s separatore] [-q] [-h] [-n iterazioni]\n"
+                    printf("Utilizzo: ./ams_f0 [-f nome_file] [-p path] [-o output_file] [-d path_output_file] [-s separatore] [-q] [-h]\n"
                             "Il seguente programma utilizza l'algoritmo AMS per stimare calcolare il numero di F0, il risultato verrà poi salvato in un file in formato CSV.\n"
                             "Le opzioni disponibili sono le seguenti:\n"
                             "  -h                   Messaggio di aiuto\n"
@@ -247,35 +288,19 @@ int main(int argc, char *argv[]) {
                             "  -d output_path       Permette di specificare il percorso in cui si trova il file di output.\n"
                             "  -s separatore        Permette di specificare il carattere di separazione degli elementi utilizzati nel file di input.\n"
                             "  -q                   L'opzione quiet permette di sopprimere l'output a schermo.\n"
-                            "  -n iterazioni        Permette di specificare il nuemro di iterazioni per stimare F_0.\n"
                             "ATTENZIONE: Il programma non crea in automatico il file di output, quindi bisogna assicurarsi in anticipo della sua presenza.\n");
+
                     return 0;
                 default:
                     err_sys("Errore: Opzione inserita sconosciuta\t");
             }
         }
-
-    if (strlen(path) + strlen(filename) < 2*MAXLENGTH) {
-        snprintf(fullpath, 2*MAXLENGTH, "%s%s", path, filename);
-    } else {
-        err_sys("Errore: Il percorso completo del file è troppo lungo");
-    }
-
-    if (strlen(path_output) + strlen(filename_output) < 2*MAXLENGTH) {
-        snprintf(fullpath_output, 2*MAXLENGTH, "%s%s", path_output, filename_output);
-    } else {
-        err_sys("Errore: Il percorso completo del file di output è troppo lungo");
-    }
-
-    FILE* file_output = fopen(fullpath_output, "w");
-    if (file_output == NULL) { 
-        err_sys("Errore: Impossibile aprire il file di output.\t");
-    }
-
-
-    for(int i = 0; i < n; i++) {
-        
+    
     snprintf(formato_input, MAXLENGTHSTREAM, "%%d%c", separatore);
+
+
+
+
 
 
     //printf("Inserisci un numero intero positivo: ");
@@ -286,21 +311,41 @@ int main(int argc, char *argv[]) {
     //    return 1;
     //}
 
+    if (strlen(path) + strlen(filename) < 2*MAXLENGTH) {
+        snprintf(fullpath, 2*MAXLENGTH, "%s%s", path, filename);
+    } else {
+        err_sys("Errore: Il percorso completo del file è troppo lungo");
+    }
 
 
     FILE* file = fopen(fullpath, "r");
     if (file == NULL) {
-        fclose(file_output);
         printf("Errore: Impossibile aprire il file.\t");
         return 1;
     }
 
+
+    if (strlen(path_output) + strlen(filename_output) < 2*MAXLENGTH) {
+        snprintf(fullpath_output, 2*MAXLENGTH, "%s%s", path_output, filename_output);
+    } else {
+        err_sys("Errore: Il percorso completo del file di output è troppo lungo");
+    }
+
+    FILE* file_output = fopen(fullpath_output, "w");
+    if (file_output == NULL) {
+        fclose(file);
+        err_sys("Errore: Impossibile aprire il file di output.\t");
+    }
+    
+
+
+
     sprintf(formato_input, "%%d%c", separatore);
     
-    
+    t_0 = clock();
     while (fscanf(file, formato_input, &a_i) == 1){
 
-        t_0 = clock();
+        
 
 
         if (a_i >= 0 && a_i <= INT_MAX) {
@@ -319,14 +364,13 @@ int main(int argc, char *argv[]) {
             printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
         }
 
-        t_f = clock();
+        
 
-    
         
     }
     
-    
-    delta_t = delta_t + ((double) (t_f - t_0) / CLOCKS_PER_SEC);
+    t_f = clock();
+    delta_t = ((double) (t_f - t_0) / CLOCKS_PER_SEC);
 
     fclose(file);
 
@@ -341,24 +385,22 @@ int main(int argc, char *argv[]) {
 
     */
     distinct_item_estimate = 1 << R;
-    sum_distinct_item_estimate += distinct_item_estimate;
-
-
-    }
-
-    double average_distinct_item_estimate = sum_distinct_item_estimate / n;
 
     if (!quiet) {
         printf("AMS Frequency Moments - momento di ordine 0 \n");
-        printf("Distinct item stimati: %.2f\n",average_distinct_item_estimate);
+        printf("Distinct item stimati: %d\n",distinct_item_estimate);
         printf("Tempo di esecuzione: %f [s]\n",delta_t);
     }
 
+    
+
+
+    
 
     
     // salvataggio sul file di output
     fprintf(file_output, "algoritmo,stima,esecuzione\n");
-    fprintf(file_output, "ams,%.2f,%f\n", average_distinct_item_estimate, delta_t);
+    fprintf(file_output, "ams,%d,%f\n", distinct_item_estimate, delta_t);
     fclose(file_output);
     
 
