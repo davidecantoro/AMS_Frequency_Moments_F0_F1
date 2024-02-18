@@ -1,7 +1,7 @@
 # AMS Frequency Moments
-Il seguente documento è tratto da un analisi del paper di Alon, Matias, e Szegedy, "The Space Complexity of Approximating the Frequency Moments" [1].
+Il seguente documento è tratto da un analisi del paper di Alon, Matias, e Szegedy, "The Space Complexity of Approximating the Frequency Moments" [1]. 
 
-Questo documento si propone di definire uno pseudocodice per l'algoritmo AMS Frequency Moments, in modo da definire un implementazione in C/C++.
+Questo documento si propone di definire uno pseudocodice per l'algoritmo AMS Frequency Moments, per poi procedere con la sua implementazione in C/C++.
 
 L'attenzione è stata concentrata sui momenti di ordine $k$ pari a 0 e 1.
 
@@ -14,16 +14,21 @@ Il momento di ordine k è dato da $F_k = \sum_{i=1}^{n} m_i^k$, dove $m_i$ è il
 
 $F_k$ è definito come la somma k-esime potenze dei conteggi $m_i$.
 
+L'obiettivo dell'algoritmo AMS consiste nel fornire una stima accurata di $F_k$ usando un algoritmo randomizzato.
+
 ## Estimating $F_k$
-Estraiamo un numero casuale $a_p$ della sequenza, dove l'indice $p$ è stato scelto in modo casuale e uniforme tra gli indici $1, ...,m$.
+
+Estraiamo un numero casuale $a_p$ della sequenza, dove l'indice $p$ è stato scelto in modo casuale e uniforme tra gli indici $1, ...,m$. Possiamo quindi definire $r$ come segue.
 
 Sia $r=|\{q:q \ge p, a_q =  a_p\}|$ il conteggio di $a_p$ in $A$, da un fissato $p$ in poi.
 
 Definiamo la variabile $X=m(r^k - (r-1)^k)$.
 
-Nel caso in cui $m$ sia sconosciuta: quando $a_m$ (elemento m-esimo dello stram) arriva, viene rimpiazzato ad $a_p$ con probabilità $1/m$, in questo caso $r$ viene impostato a 1, se non c'è rimpiazzo $r$ viene incrementato se $a_m = a_p$.
+Nel caso in cui $m$ sia sconosciuta: quando $a_m$ (elemento m-esimo della sequenza) arriva, viene rimpiazzato ad $a_p$ con probabilità $1/m$, in caso di rimpiazzo $r$ viene impostato a 1, altrimenti viene incrementato se $a_m = a_p$.
 
-Come dimostrato da Alon et al. [1], si ha che $E(X) = ∑_{i=1}^n m_i^k = F_k$ e $Var(X) = E(X^2) - (E(X))^2$ dove $E(X^2) ≤ kF_1F_{2k-1}$ .
+Come dimostrato da Alon et al. [1], si ha che:
+$E(X) = ∑_{i=1}^n m_i^k = F_k$ 
+$Var(X) = E(X^2) - (E(X))^2$ dove $E(X^2) ≤ kF_1F_{2k-1}$ .
 
 ### Pseudocode
 Procedimento per una singola variabile X.
@@ -77,7 +82,8 @@ AMS_Frequency_Moment(A, k): # A stream, k moment order
 
 ## Momento di ordine 0: $F_0$
 
-Il paper di Alon et al., [1] propone una modifica all'algoritmo Flajolet-Martin proposto da Flajolet et al., [2] per calcolare il momento di ordine 0. Questa implementazione utilizza un algoritmo randomico, la randomicità è introdotta dall'uso della funzione $z_i$, l'uso di un algoritmo randomico è particolarmente importante in quanto permette di usare solo O(log n) bit di memoria.
+Il paper di Alon et al., [1] propone una modifica all'algoritmo Flajolet-Martin proposto da Flajolet et al., [2] per calcolare il momento di ordine 0. Questa implementazione utilizza un algoritmo randomico, la randomicità è introdotta dall'uso della funzione $z_i$.
+L'uso di un algoritmo randomico è particolarmente importante in quanto permette di utilizzare solo O(log n) bit di memoria.
 
 Il momento di ordine k = 0, indicato anche $F_0$, è utilizzato per stimare il numero di elementi distinti in uno stream. 
 
@@ -92,6 +98,8 @@ L'output dell'algoritmo sarà $Y=2^R$.
 
 
 ### Pseudocode
+Per ottenere una stima di $F_k$, l’algoritmo *"AMS_Frequency_Moment_0(A)"* viene eseguito per un numero prefissato di iterazioni. Alla fine delle iterazioni, si calcola la media del risultato offerto da *"AMS_Frequency_Moment_0(A)"* per avere la stima di $F_k$.
+
 ```
 AMS_Frequency_Moment_0(A): # A stream
   // initialize...
@@ -112,9 +120,7 @@ define r: r calculate number of trailing 0s
 ### Input file e premesse
 Lo stream utilizzato è stato generato dal programma "generate_stream" ed è disponibile nella directory "stream_generator".
 
-Per il corretto utilizzo del programma, è necessario fornire un file contenente una serie di numeri interi e non negativi, ciascun numero deve essere disposto su una riga e separata da un punto e virgola. È inoltre disponibile uno script denominato "pulizia_stream.sh" che consente la rimozione di tutti i caratteri ad esclusione dei caratteri non numerisci e del carattere separatore.
-
-Per semplificare la compilazione del programma, è stato progettato un Makefile. Basta eseguire il comando "make" per compilare tutto in automatico, inoltre è possibile eseguire il comando "make clean" per rimuovere tutti gli eseguibili.
+Per il corretto utilizzo dei programmi ams_f0 ed ams_f1, è necessario fornire un file di input contenente una serie di numeri interi e non negativi, ciascun numero deve essere disposto su una riga e separata da un punto e virgola. È inoltre disponibile uno script denominato "pulizia_stream.sh" che consente la rimozione di tutti i caratteri ad esclusione dei caratteri non numerisci e del carattere separatore.
 
 Esempio del formato del file di input:
 ```
@@ -126,6 +132,9 @@ Esempio del formato del file di input:
 52;
 54;
 ```
+
+Per semplificare la compilazione del programma, è stato progettato un **Makefile**. Basta eseguire il comando "make" per compilare tutto in automatico, inoltre è possibile eseguire il comando "make clean" per rimuovere tutti gli eseguibili.
+
 
 
 #### Script di Pulizia (pulizia_stream.sh)
@@ -162,7 +171,7 @@ Tempo di esecuzione: 0.000087 [s]
 ### Usage
 Il programma dispone di un opzione di usage, richiamabile tramite l'opzione -h, che stampa il seguente messaggio.
 ```
-Utilizzo: ./ams_f0 [-f nome_file] [-p path] [-o output_file] [-d path_output_file] [-s separatore] [-q] [-h]
+Utilizzo: ./ams_f0 [-f nome_file] [-p path] [-o output_file] [-d path_output_file] [-s separatore] [-q] [-h] [-n iterazioni]
 Il seguente programma utilizza l'algoritmo AMS per stimare calcolare il numero di F0, il risultato verrà poi salvato in un file in formato CSV.
 Le opzioni disponibili sono le seguenti:
   -h                   Messaggio di aiuto
@@ -172,6 +181,7 @@ Le opzioni disponibili sono le seguenti:
   -d output_path       Permette di specificare il percorso in cui si trova il file di output.
   -s separatore        Permette di specificare il carattere di separazione degli elementi utilizzati nel file di input.
   -q                   L'opzione quiet permette di sopprimere l'output a schermo.
+  -n iterazioni        Permette di specificare il nuemro di iterazioni per stimare F_0.
 ATTENZIONE: Il programma non crea in automatico il file di output, quindi bisogna assicurarsi in anticipo della sua presenza.
 ```
 
@@ -182,24 +192,31 @@ La libreria getopt è stata utilizzata in modo da permettere l'utilizzo delle op
 La funzione err_sys è stata implementata per gestire gli errori. Tale funzione ha lo scopo di mostrare a schermo un messaggio di errore descrittivo e di terminare l'esecuzione del programma.
 
 ```c
-sprintf(formato_input, "%%d%c", separatore);
-t_0 = clock();
+for(int i = 0; i < n; i++) {
 
-while (fscanf(file, formato_input, &a_i) == 1){   // lettura per riga
-    if (a_i >= 0 && a_i <= INT_MAX) {     //  controllo validità valore
-        z_i = z_hash(a, a_i, b);
-        r_i = trailing_0s(z_i);
-        R = max(R,r_i);
-    } else {
-        printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
-    }
+  while (fscanf(file, formato_input, &a_i) == 1){   // lettura per riga
+      t_0 = clock();
+      if (a_i >= 0 && a_i <= INT_MAX) {     //  controllo validità valore
+          z_i = z_hash(a, a_i, b);
+          r_i = trailing_0s(z_i);
+          R = max(R,r_i);
+      } else {
+          printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
+      }
+      t_f = clock();
 }
+  
+  delta_t = delta_t + ((double) (t_f - t_0) / CLOCKS_PER_SEC);;  // tempo di esecuzione in secondi
+  distinct_item_estimate = 1 << R;    // elevamento a potenza usando shift a sinistra di R posizioni
+  sum_distinct_item_estimate += distinct_item_estimate;
 
-t_f = clock();
-delta_t = ((double) (t_f - t_0) / CLOCKS_PER_SEC);  // tempo di esecuzione in secondi
-distinct_item_estimate = 1 << R;    // elevamento a potenza usando shift a sinistra di R posizioni
+}
+double average_distinct_item_estimate = sum_distinct_item_estimate / n; //stima di F_k
+
 ```
 Per il calcolo di $2^R$ si è utilizzato lo shift a sinistra, invece dell'utilizzo della libreria math. Questa opzione è stato resa possibile in quanto R è un numero intero (non negativo) e distinct_item_estimate è una potenza di due.
+
+Per l’implementazione completa, si rimanda al codice completo.
 
 
 #### Controllo input utente
@@ -300,11 +317,11 @@ t_f = clock();
 
 
 ## Stream generator
-Per generare lo stream utilizzato in questo lavoro è stato implementato in C++ un generatore di numeri pseudo-casuali. Questo generatore, disponibile nella directory "stream_generator", si occupa inoltre del salvataggio dello stream in formato CSV, con possibilità di salvare l'output anche altre estensioni.
+Per generare lo stream utilizzato in questo lavoro è stato implementato in C++ un **generatore di numeri pseudo-casuali**. Questo generatore, disponibile nella directory "stream_generator", si occupa inoltre del salvataggio dello stream in formato CSV, con possibilità di salvare l'output anche altre estensioni.
 
 Nella stessa directory sono presenti due script di utility scritti in bash: "test_generatore.sh" e "controllo_input.sh". Questi script hanno lo scopo di testare le combinazioni di input disponibili, verificando sia il corretto funzionamento delle opzioni disponibili che il corretto funzionamento dei meccanismi di controllo dell'input inserito da utente.
 
-Un Makefile è disponibile per semplificare la compilazione del programma.
+Un **Makefile** è disponibile per semplificare la compilazione del programma.
 
 Le distribuzioni implementate per generare numeri pseudo-casualmente sono:
 - uniforme
