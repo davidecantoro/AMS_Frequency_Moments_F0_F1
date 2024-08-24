@@ -1,7 +1,0 @@
-n,momento,distribuzione,algoritmo,stima,esecuzione,cpu_percent,max_RSS,max_RSS_unit
-1,f1,esponenziale,ams,328.000000,0.003396,75,992,kbytes
-10,f1,esponenziale,ams,712.800000,0.003353,97,992,kbytes
-100,f1,esponenziale,ams,2093.960000,0.003342,99,992,kbytes
-500,f1,esponenziale,ams,4666.374000,0.003354,99,1088,kbytes
-1000,f1,esponenziale,ams,6618.787000,0.003352,99,1056,kbytes
-3000,f1,esponenziale,ams,11490.040667,0.003337,99,1120,kbytes
