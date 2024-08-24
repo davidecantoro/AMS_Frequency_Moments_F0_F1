@@ -1,0 +1,6 @@
+simulazioni_path="simulazioni/simulazione_20240219"
+output_path="$simulazioni_path/output_algoritmi_iter_n/"
+n_iteration=(1 10 100 500 1000 3000)
+file_name_dataset="dataset_fileinput.csv"
+algoritmi=("ams_f0_n" "ams_f1_n")
+

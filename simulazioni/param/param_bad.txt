@@ -1,0 +1,10 @@
+simulazioni_path="simulazioni"
+output_path="$simulazioni_path/simulazione_20240219/output_algoritmi_bad/"
+file_name_input="bad.csv"
+
+numero_esecuzioni=100
+algoritmi=("naive_f0" "ams_f0" "naive_f1" "ams_f1" )
+
+n_iteration=(1 10 100 500 1000 3000)
+algoritmi_n=("ams_f0_n" "ams_f1_n")
+

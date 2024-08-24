@@ -1,0 +1,7 @@
+n,momento,distribuzione,algoritmo,stima,esecuzione,cpu_percent,max_RSS,max_RSS_unit
+1,f0,uniforme,ams,256.00,0.000000,87,1056,kbytes
+10,f0,uniforme,ams,256.00,0.000005,98,992,kbytes
+100,f0,uniforme,ams,256.00,0.000027,99,992,kbytes
+500,f0,uniforme,ams,256.00,0.000178,99,1056,kbytes
+1000,f0,uniforme,ams,256.00,0.000293,99,1056,kbytes
+3000,f0,uniforme,ams,256.00,0.001003,99,1152,kbytes

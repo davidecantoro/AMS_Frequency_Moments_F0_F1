@@ -1,0 +1,16 @@
+file,distribuzione,parametro1,parametro2,lunghezza
+poisson_75_1000.csv,poisson,75,,1000
+poisson_75_5000.csv,poisson,75,,5000
+poisson_75_10000.csv,poisson,75,,10000
+poisson_75_25000.csv,poisson,75,,25000
+poisson_75_50000.csv,poisson,75,,50000
+uniforme_0.0_200.0_1000.csv,uniforme,0.0,200.0,1000
+esponenziale_1.0_1000_10hat3.csv,esponenziale,1.0,3,1000
+uniforme_0.0_200.0_5000.csv,uniforme,0.0,200.0,5000
+esponenziale_1.0_5000_10hat3.csv,esponenziale,1.0,3,5000
+uniforme_0.0_200.0_10000.csv,uniforme,0.0,100.0,10000
+esponenziale_1.0_10000_10hat3.csv,esponenziale,1.0,3,10000
+uniforme_0.0_200.0_25000.csv,uniforme,0.0,200.0,25000
+esponenziale_1.0_25000_10hat3.csv,esponenziale,1.0,3,25000
+uniforme_0.0_200.0_50000.csv,uniforme,0.0,200.0,50000
+esponenziale_1.0_50000_10hat3.csv,esponenziale,1.0,3,50000

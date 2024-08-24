@@ -1,0 +1,26 @@
+# .gitignore
+
+# executable and .o
+ams_f0
+ams_f0_n
+ams_f1
+ams_f1_n
+naive_f0
+naive_f1
+
+# old simulation
+output_files/
+simulazioni/simulazione_20240114/
+simulazioni/simulazione_20240119/
+simulazioni/simulazione_20240220/
+simulazioni/simulazione_20240819/
+simulazioni/simulazione_20240823/
+simulazioni/simulazione_final/
+old/
+test_c
+test_c.c
+
+
+# setting bot telegram
+token_bot
+chat_id_bot

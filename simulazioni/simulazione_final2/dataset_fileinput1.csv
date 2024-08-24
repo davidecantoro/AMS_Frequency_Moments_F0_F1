@@ -1,0 +1,6 @@
+file,distribuzione,parametro1,parametro2,lunghezza
+poisson_75_1000.csv,poisson,75,,1000
+poisson_75_5000.csv,poisson,75,,5000
+poisson_75_10000.csv,poisson,75,,10000
+poisson_75_25000.csv,poisson,75,,25000
+poisson_75_50000.csv,poisson,75,,50000

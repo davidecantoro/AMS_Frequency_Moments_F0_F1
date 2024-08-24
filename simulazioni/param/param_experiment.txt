@@ -1,0 +1,5 @@
+simulazioni_path="simulazioni/simulazione_final2"
+output_path="$simulazioni_path/output_algoritmi2/"
+numero_esecuzioni=100
+file_name_dataset="dataset_fileinput.csv"
+algoritmi=("ams_f1")

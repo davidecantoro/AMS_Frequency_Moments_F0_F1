@@ -1,0 +1,7 @@
+n,momento,distribuzione,algoritmo,stima,esecuzione,cpu_percent,max_RSS,max_RSS_unit
+1,f0,poisson,ams,16.00,0.000001,60,992,kbytes
+10,f0,poisson,ams,16.00,0.000002,100,992,kbytes
+100,f0,poisson,ams,16.00,0.000029,99,992,kbytes
+500,f0,poisson,ams,16.00,0.000163,99,1120,kbytes
+1000,f0,poisson,ams,16.00,0.000318,99,1184,kbytes
+3000,f0,poisson,ams,16.00,0.001007,99,1120,kbytes
