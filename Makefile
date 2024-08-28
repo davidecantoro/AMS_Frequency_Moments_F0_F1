@@ -25,4 +25,4 @@ all: $(TARGETS)
 
 # rule clean
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(OBJECTS) $(TARGETS)
