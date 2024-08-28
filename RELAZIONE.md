@@ -10,40 +10,41 @@ Versione Markdown (per una lettura più scorrevole): [RELAZIONE.md](https://gith
 ## Abstract
 Il seguente documento è tratto da un analisi del paper di Alon, Matias, e Szegedy, "The Space Complexity of Approximating the Frequency Moments" [1], che introduce un algoritmo di approssimazione dei momenti di frequenza $F_k$. In questa relazione, viene proposto uno pseudocodice per l'algoritmo AMS, seguido da una sua implementazione in C. 
 
-L'attenzione è stata concentrata sui momenti di ordine $k$ pari a 0 e 1, ossia $F_0$ e $F_1$ che rappresentano rispettivamente il numero di elementi distinti e la lunghezza di uno stream.
+L'attenzione è stata concentrata sui momenti di frequenza ordine $k$ pari a 0 e 1, ossia $F_0$ e $F_1$ che rappresentano rispettivamente il numero di elementi distinti e la lunghezza di uno stream.
 
 
 
 ## Introduzione
 L'obiettivo dell'algoritmo AMS consiste nel fornire una stima accurata di $F_k$ usando un approccio randomizzato. 
-Questa metodologia è stata pensata per poter lavorare su uno stream di dati, caratterizzati dall'avere dimensioni enormi, potenzialmente infinite. In questi contesti è impraticabile andare a tenere traccia di ogni elemento dello stream, rendendo necessaria l'uso di tecniche di stima per calcolare i momenti di frequenza.
+Questa metodologia è stata pensata per poter lavorare su uno stream di dati, caratterizzato dall'avere dimensioni enormi, potenzialmente infinite. In questi contesti è impraticabile andare a tenere traccia di ogni elemento dello stream, rendendo necessaria l'uso di tecniche di stima per calcolare i momenti di frequenza.
 
-L'algoritmo AMS è noto per l'efficienza sul'uso di memoria e per introdurre un approcci probabilistico per il calcolo dei momenti di frequenza $F_k$.
+L'algoritmo AMS è noto per l'efficienza sul'uso di memoria e per introdurre un approccio probabilistico per il calcolo dei momenti di frequenza $F_k$.
 
 Sia $A = (a_1, a_2, ..., a_m)$ una sequenza di m elementi, con $a_i ∈ N=\{1,2,...,n\}$. Denotiamo con $m_i$ le occorrenze i-esime nella sequenza A.
 
-Il momento di ordine k è definito da $F_k = \sum_{i=1}^{n} m_i^k$, dove $m_i$ è il numero di occorrenze di $i$ nella sequenza. $F_k$ è definito come la somma k-esime potenze dei conteggi $m_i$.
+Il momento di frequenza di ordine k è definito da $F_k = \sum_{i=1}^{n} m_i^k$, dove $m_i$ è il numero di occorrenze di $i$ nella sequenza. $F_k$ è definito come la somma k-esime potenze dei conteggi $m_i$.
 
 
 ### Struttura della Relazione
 - Teoria ed Algoritmi: Introduzione dei concetti fondamentali dei metodi di frequenza, seguito da una descrizione dell'algoritmo AMS.
 - Implementazione: Descrizione dell'implementazione in C dell'algoritmo AMS relativi ad $F_0$ ed $F_1$.
     - Implementazione dell'algoritmo AMS per $F_0$ con la tecnica di Median of Means.
-- Simulazione e Risultati.
+- Simulazione, risultati e conclusioni.
 
 ## Estimating $F_k$
 
-Per stimare $F_k$ estraiamo un numero casuale $a_p$ della sequenza, dove l'indice $p$ è scelto in modo casuale e uniforme tra gli indici $1, ...,m$. Possiamo quindi definire $r$ come segue.
+Per stimare $F_k$: sia estratto un numero casuale $a_p$ della sequenza, dove l'indice $p$ è scelto in maniera casuale e uniforme tra gli indici $1, ...,m$. Possiamo quindi definire $r$ come segue.
 
 Sia $r=|\{q:q \ge p, a_q =  a_p\}|$ il numero di occorrenze di $a_p$ in $A$, a partire da un indice $p$ in poi.
 
 Definiamo la variabile casuale $X=m(r^k - (r-1)^k)$, dove $m$ corrisponde alla lunghezza della sequenza.
 
-Nel caso in cui $m$ sia sconosciuta si usa un differente approccio: quando $a_m$ (elemento m-esimo della sequenza) arriva, viene rimpiazzato ad $a_p$ con probabilità $1/m$, in caso di rimpiazzo $r$ viene impostato a 1, altrimenti viene incrementato se $a_m = a_p$.
+Nel caso in cui $m$ sia sconosciuta è necessario l'uso di un approccio differente: all'arrivo di $a_m$ (elemento m-esimo della sequenza), viene eseguito un rimpiazzo ad $a_p$ con probabilità $1/m$. In caso di rimpiazzo $r$ viene impostato ad 1, altrimenti viene incrementato se $a_m = a_p$.
 
 Come dimostrato da Alon et al. [1], si ha che:
 $E(X) = \sum_{i=1}^n m_i^k = F_k$ 
 $Var(X) = E(X^2) - (E(X))^2$ dove $E(X^2) ≤ kF_1F_{2k-1}$ .
+Questi risultati sono imporatnti in quanto ci assicurano che in media l'algoritmo produce risultati accurati, anche per k di molto grande.
 
 ### Algoritmo
 #### PSEUDOCODE
@@ -54,8 +55,7 @@ Procedimento per una singola variabile X.
 
 Case: m known
 ```
-AMS_Frequency_Moment_m_known(A, k, m): # A stream, k moment order, m length 
-                                    of the stream
+AMS_Frequency_Moment_m_known(A, k, m): # A stream, k moment order, m length of the stream
   initialize...
   p <- rand uniform (1,m)
   r <- 1
@@ -141,32 +141,20 @@ Le distribuzioni implementate per la generazione dei numeri sono le seguenti:
 
 Il programma dispone di un opzione di usage, richiamabile tramite l'opzione -h, che stampa il seguente messaggio.
 ```
-Utilizzo: ./generate_stream [-d distribuzione] [-l lambda] [-a min] [-b max]
-                             [-n lunghezza] [-f file]
-Il seguente programma genera uno stream di numeri pseudo-casuali,
-     salvando il risultato in un file in formato CSV.
-ATTENZIONE: Il seguente programma fornisce in output un file CSV di 
-    numeri interi, quindi per conservare le cifre decimali bisogna
-    utilizzare l'opzione x
+Utilizzo: ./generate_stream [-d distribuzione] [-l lambda] [-a min] [-b max] [-n lunghezza] [-f file]
+Il seguente programma genera uno stream di numeri pseudo-casuali, salvando il risultato in un file in formato CSV.
+ATTENZIONE: Il seguente programma fornisce in output un file CSV di numeri interi, quindi per conservare le cifre decimali bisogna utilizzare l'opzione x
 Le opzioni disponibili sono le seguenti:
   -h                Messaggio di aiuto
-  -d distribuzione  Permette di specificare una distribuzione da usare: uniforme, 
-                                        esponenziale, poisson. Default = uniforme
-  -l lambda         Permette di specificare il parametro lambda usato per le 
-                            distribuzioni esponenziale e Poisson. Default = 10
-  -a min            Permette di specificare il limite inferiore per la 
-                                            distribuzione uniforme. Default = 0
-  -b max            Permette di specificare il limite superiore per la 
-                                            distribuzione uniforme. Default = 100
+  -d distribuzione  Permette di specificare una distribuzione da usare: uniforme, esponenziale, poisson. Default = uniforme
+  -l lambda         Permette di specificare il parametro lambda usato per le distribuzioni esponenziale e Poisson. Default = 10
+  -a min            Permette di specificare il limite inferiore per la distribuzione uniforme. Default = 0
+  -b max            Permette di specificare il limite superiore per la distribuzione uniforme. Default = 100
   -n lunghezza      Permette di specificare la lunghezza dello stream.Default=200
-  -x cifre          Permette di specificare il numero di cifre decimali da 
-                                                        mantenere. Default = 0
-  -f file           Permette di specificare il nome del file CSV fino ad un  
-                                        massimo di 49 caratteri. Default = stream
-  -e estensione     Permette di specificare l'estensione del file fino ad un 
-                                        massimo di 4 caratteri. Default = CSV
-  NOTA - caratteri non accettati: spazi, stringhe vuote, stringhe con solo spazi,
-                        caratteri speciali diversi da virgola, trattino e punto
+  -x cifre          Permette di specificare il numero di cifre decimali da mantenere. Default = 0
+  -f file           Permette di specificare il nome del file CSV fino ad un  massimo di 49 caratteri. Default = stream
+  -e estensione     Permette di specificare l'estensione del file fino ad un massimo di 4 caratteri. Default = CSV
+  NOTA - caratteri non accettati: spazi, stringhe vuote, stringhe con solo spazi, caratteri speciali diversi da virgola, trattino e punto
 ```
 
 #### Implementazione
@@ -227,10 +215,10 @@ double poisson(std::default_random_engine& generator, double lambda) {
     }
 ```
 
-## Momento di ordine 0: $F_0$
+## Momento k=0 0: $F_0$
 
 Il momento di frequenza di ordine 0, ossia $F_0$, corrisponde al numero di elementi distinti di uno stream.
-Alon et al., [1] per l'implementazione del momento di ordine 0 propone una modifica dell'algoritmo Flajolet-Martin [2] per calcolare $F_0$. La modifica consiste nell'introduzione di randomicità mediante l'uso di una funzione hash lineare del tipo $h(x) = ax +b $, permettendo di ottenere una stima $F_0$ utilizzando solo O(log n) bit di memoria per contenere l'informazione.
+Alon et al., [1] per tale implementazione propone una modifica dell'algoritmo Flajolet-Martin [2] per calcolare $F_0$. La modifica consiste nell'introduzione di randomicità mediante l'uso di una funzione hash lineare del tipo $h(x) = ax +b $, permettendo di ottenere una stima $F_0$ utilizzando solo O(log n) bit di memoria per contenere l'informazione.
 
 
 Sia definito il campo $F=GF(2^d)$, dove d è il più grande intero t.c. $2^d>n$. Siano $a,b$ due numeri casuali definiti in $F$, si computi $z_i = a * a_i +b$, con prodotto e somma riferiti al campo $F$. La funzione z così definita fornisce un mapping pairwise independent [1].
@@ -285,25 +273,17 @@ Tempo di esecuzione: 0.000087 [s]
 ### Usage
 Il programma dispone di un opzione di usage, richiamabile tramite l'opzione -h, che stampa il seguente messaggio.
 ```
-Utilizzo: ./ams_f0 [-f nome_file] [-p path] [-o output_file] 
-            [-d path_output_file] [-s separatore] [-q] [-h] [-n iterazioni]
-Il seguente programma utilizza l'algoritmo AMS per stimare calcolare il 
-    numero di F0, il risultato verrà poi salvato in un file in formato CSV.
+Utilizzo: ./ams_f0 [-f nome_file] [-p path] [-o output_file] [-d path_output_file] [-s separatore] [-q] [-h] [-n iterazioni]
+Il seguente programma utilizza l'algoritmo AMS per stimare calcolare il numero di F0, il risultato verrà poi salvato in un file in formato CSV.
 Le opzioni disponibili sono le seguenti:
   -h                   Messaggio di aiuto
-  -f nome_file         Permette di specificare il nome del file da utilizzare 
-                                                        per il calcolo di F0.
-  -p path              Permette di specificare il percorso del file da utilizzare 
-                                                        per il calcolo di F0.
-  -o output_file       Permette di specificare il nome del file da utilizzare 
-                                                        per salvare i risultati.
-  -d output_path       Permette di specificare il percorso in cui si trova il 
-                                                                file di output.
-  -s separatore        Permette di specificare il carattere di separazione degli 
-                                        elementi utilizzati nel file di input.
+  -f nome_file         Permette di specificare il nome del file da utilizzare per il calcolo di F0.
+  -p path              Permette di specificare il percorso del file da utilizzare per il calcolo di F0.
+  -o output_file       Permette di specificare il nome del file da utilizzare per salvare i risultati.
+  -d output_path       Permette di specificare il percorso in cui si trova il file di output.
+  -s separatore        Permette di specificare il carattere di separazione degli elementi utilizzati nel file di input.
   -q                   L'opzione quiet permette di sopprimere l'output a schermo.
-ATTENZIONE: Il programma non crea in automatico il file di output, quindi 
-                        bisogna assicurarsi in anticipo della sua presenza.
+ATTENZIONE: Il programma non crea in automatico il file di output, quindi bisogna assicurarsi in anticipo della sua presenza.
 ```
 
 
@@ -323,15 +303,13 @@ while (fscanf(file, formato_input, &a_i) == 1){   // lettura per riga
         r_i = trailing_0s(z_i);
         R = max(R,r_i);
     } else {
-        printf("Errore: Letto valore sconosciuto, il valore letto verrà 
-                                                            scartato");
+        printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
     }
 }
 
 delta_t += clock();
 delta_t = delta_t / CLOCKS_PER_SEC;  // tempo di esecuzione in secondi
-// elevamento a potenza usando shift a sinistra di R posizioni
-distinct_item_estimate = 1 << R;    
+distinct_item_estimate = 1 << R; // elevamento a potenza usando shift a sinistra di R posizioni   
 
 ```
 Per il calcolo di $2^R$ si è utilizzato lo shift a sinistra, invece dell'utilizzo della libreria math. Questa opzione è stato resa possibile in quanto R è un numero intero (non negativo) e distinct_item_estimate è una potenza di due.
@@ -351,25 +329,21 @@ strncpy(filename, optarg, MAXLENGTH - 1);
 filename[MAXLENGTH - 1] = '\0';
 
 // compilazione espressione
-int result_compilazione_f = regcomp(&regex_function_filename, regex_filename,
-                                                             REG_EXTENDED);
+int result_compilazione_f = regcomp(&regex_function_filename, regex_filename,REG_EXTENDED);
 if (result_compilazione_f) {
   char error_mex[20],error_mex_output[100];
-  regerror(result_compilazione_f, &regex_function_filename, error_mex, sizeof(error_mex));
-  sprintf(error_mex_output, "Errore durante la compilazione della regex 
-                                        per il filename: %s\t", error_mex);
+  regerror(result_compilazione_f, &regex_function_filename, error_mex,sizeof(error_mex));
+  sprintf(error_mex_output, "Errore durante la compilazione della regex per il filename: %s\t", error_mex);
   regfree(&regex_function_filename);
   err_sys(error_mex_output);
 }
 
 // controllo espressione regolare
-int result_controllo_regex_f = regexec(regex_function_filename, optarg, 0, 
-                                                                NULL, 0);
+int result_controllo_regex_f = regexec(regex_function_filename, optarg, 0, NULL, 0);
 if (result_controllo_regex_f){
  char error_mex[20],error_mex_output[100];
  regerror(result_controllo_regex_f, regex_function_filename, error_mex, sizeof(error_mex));
- sprintf(error_mex_output, "Errore durante il controllodella regex per il 
-                                                filename: %s\t", error_mex);
+ sprintf(error_mex_output, "Errore durante il controllodella regex per il filename: %s\t", error_mex);
  regfree(&regex_function_filename);
  err_sys(error_mex_output);
 }
@@ -388,8 +362,7 @@ int trailing_0s(int a_i) {
     int zeros = 0;
     while ((a_i & 1) == 0) {    // finchè il bit meno significativo è 0
         zeros++;    // counter trailing_0s
-        a_i = a_i >> 1; // applico l'operazione bit a bit di spostamento a 
-                                        //          destra di 1 posizione
+        a_i = a_i >> 1; // applico l'operazione bit a bit di spostamento a destra di 1 posizione
     }
     return zeros;
 }
@@ -456,8 +429,8 @@ double distinct_item_estimate = median(means, NHASH / GROUHASH);
 ```
 
 
-## Momento di ordine 1: $F_1$
-Il momento di ordine k pari a 1 ($F_1$) corrisponde alla lunghezza dello Stream, ossia alla somma di tutti gli elementi distinti. 
+## Momento k=1: $F_1$
+Il momento di frequenza di ordine k pari a 1 ($F_1$) corrisponde alla lunghezza dello Stream, ossia alla somma di tutte le frequenze degli elementi distinti. 
 
 Ricordando la definizione di X trattata prima: $X=m(r^k - (r-1)^k)$
 
@@ -482,8 +455,7 @@ while (fscanf(file, formato_input, &a_i) == 1){
     if (a_i >= 0 && a_i <= INT_MAX) { // se l'elemento è valido
         m++;
     } else {
-        printf("Errore: Letto valore sconosciuto, il valore letto verrà 
-                                                            scartato");
+        printf("Errore: Letto valore sconosciuto, il valore letto verrà scartato");
     }
   }
 }
@@ -519,25 +491,17 @@ Tempo di esecuzione: 0.000746 [s]
 ### Usage
 Il programma dispone di un opzione di usage, richiamabile tramite l'opzione -h, che stampa il seguente messaggio.
 ```
-Utilizzo: ./ams_f1 [-f nome_file] [-p path] [-o output_file] 
-            [-d path_output_file] [-s separatore] [-q] [-h] [-n iterazioni]
-Il seguente programma utilizza l'algoritmo AMS per stimare calcolare il numero 
-            di F1, il risultato verrà poi salvato in un file in formato CSV.
+Utilizzo: ./ams_f1 [-f nome_file] [-p path] [-o output_file] [-d path_output_file] [-s separatore] [-q] [-h] [-n iterazioni]
+Il seguente programma utilizza l'algoritmo AMS per stimare calcolare il numero di F1, il risultato verrà poi salvato in un file in formato CSV.
 Le opzioni disponibili sono le seguenti:
   -h                   Messaggio di aiuto
-  -f nome_file         Permette di specificare il nome del file da utilizzare 
-                                                        per il calcolo di F1.
-  -p path              Permette di specificare il percorso del file da 
-                                            utilizzare per il calcolo di F1.
-  -o output_file       Permette di specificare il nome del file da utilizzare 
-                                                    per salvare i risultati.
-  -d output_path       Permette di specificare il percorso in cui si trova 
-                                                            il file di output.
-  -s separatore        Permette di specificare il carattere di separazione 
-                                    degli elementi utilizzati nel file di input.
+  -f nome_file         Permette di specificare il nome del file da utilizzare per il calcolo di F1.
+  -p path              Permette di specificare il percorso del file da utilizzare per il calcolo di F1.
+  -o output_file       Permette di specificare il nome del file da utilizzare per salvare i risultati.
+  -d output_path       Permette di specificare il percorso in cui si trova il file di output.
+  -s separatore        Permette di specificare il carattere di separazione degli elementi utilizzati nel file di input.
   -q                   L'opzione quiet permette di sopprimere l'output a schermo.
-ATTENZIONE: Il programma non crea in automatico il file di output, quindi 
-                            bisogna assicurarsi in anticipo della sua presenza.
+ATTENZIONE: Il programma non crea in automatico il file di output, quindi bisogna assicurarsi in anticipo della sua presenza.
 ```
 
 
@@ -570,8 +534,7 @@ brew install gnu-time
 Per avere delle metriche di confronto, sono stati implementati delle versioni naive degli algoritmi *ams_f0* ed *ans_f1*. Queste implementazioni utilizzano approcci più "naive" per il calcolo di $F_0$ ed $F_1$. Si basano sull'utilizzo di contatori senza particolare attenzione all'ottimizzazione della memoria utilizzata, andando di conseguenza ad utilizzare pi risorse rispetto alle loro varianti AMS.
 
 
-I plot riguardanti i risultati dell'esperimento
-utilizzati nella relazione sono stati generati tramite python e sono disponibili, oltre che nella directory del progetto, anche su [Kaggle](https://www.kaggle.com/code/davidecantoro/ams-plot) o [GitHub].
+I risultati dell'esperimento sono stati analizzati e visualizzati mediante l'utilizzo di notebook python. Questi notebook sono disponibili sia nella directory del progetto che su [Kaggle](https://www.kaggle.com/code/davidecantoro/ams-plot) o [GitHub](https://github.com/davidecantoro/AMS_Frequency_Moments_F0_F1/blob/main/ams-plot.ipynb).
 
 **Macchina di test**
 L'esperimento è stato eseguito su un MacBook Pro con chip M3 Pro e 18 GB di RAM, SO: macOS Sonoma 14.6.1
@@ -579,8 +542,8 @@ L'esperimento è stato eseguito su un MacBook Pro con chip M3 Pro e 18 GB di RAM
 ### F0
 
 #### Maximum RSS
-L'algoritmi ams_f0 e la sua variante precisa, dimostrano il comportamento atteso sull'utilizzo di memoria maggiore rispetto alle implementazioni AMS.
-L'implementazione ams_f0_n (variamte più precisa di ams_f0 che la tecnica di Median of Means) riesce a mantenere un utilizzo di memoria simile rispetto alla sua variante standard.
+Gli algoritmi *ams_f0* e la sua variante precisa *ams_f0_n*, mostrano il comportamento atteso sull'utilizzo di memoria, con la variante Naive che presenta un utilizzo di memoria maggiore rispetto alle varianti AMS.
+L'implementazione *ams_f0_n* (variamte più precisa di *ams_f0* tramite l'utilizzo della tecnica di Median of Means) riesce a mantenere un utilizzo di memoria simile rispetto alla sua variante standard.
 
 Max RSS medi sono:
 - ams_f0: 1152.1493 KB
@@ -595,9 +558,9 @@ Max RSS medi sono:
 <img src="plot/poisson_max_rss.svg" width="48%">
 
 #### Tempi di esecuzione
-Come atteso, l'algoritmo l'implementazione ams risulta essere la più veloce mentre la variante naive risulta essere la più lenta, ad eccezzione della distribuzione di poisson.
+Come atteso, l'implementazione ams risulta essere la variante più veloce mentre l'implementazione naive risulta essere la più lenta, ad eccezzione della distribuzione di poisson.
 
-Nella distribuzione di poisson, i valori generati tendono ad essere concentrati su un intervallo ristretto ma con una varianza elevata. L'implementazione ams_f0_n, risulta essere la più lenta in questo caso, in quanto per via dell'elevata variabilità della distribuzione l'algoritmo deve gestire più collisioni aumentando così il tempo di esecuzione.
+Nella ceso della distribuzione di poisson, i valori tendono ad essere concentrati su un intervallo ristretto ma con una varianza elevata. Per questo, *ams_f0_n* risulta essere la più lenta in questo caso, in quanto per via dell'elevata variabilità della distribuzione l'algoritmo deve gestire più collisioni aumentando così il tempo di esecuzione.
 
 
 <div style="display: flex; justify-content: space-between;">
@@ -609,7 +572,7 @@ Nella distribuzione di poisson, i valori generati tendono ad essere concentrati 
 
 
 #### Stime
-L'algoritmo naive, dato l'utilizzo di semplici contatori, fornisce delle stime reali di $F_0$. In dataset com una bassa variabilità della distribuzione, l'algoritmo ams_f0_n fornisce delle stime più precise di ams_f0. Questo beneficio viene a mancare però nel caso di distribuzioni con una variabilità elevata.
+L'algoritmo naive, dato l'utilizzo di semplici contatori, fornisce delle stime reali di $F_0$. In dataset com una bassa variabilità della distribuzione, l'algoritmo *ams_f0_n* fornisce delle stime più precise di *ams_f0*. Tuttavia, questo beneficio viene a mancare nel caso di distribuzioni con una variabilità elevata.
 
 <div style="display: flex; justify-content: space-between;">
     <img src="plot/exp_estimate.svg" width="48%">
@@ -650,7 +613,7 @@ I plot per il calcolo del RMSE sono disponibili su [Colab](https://github.com/da
 ### F1
 
 #### Maximum RSS
-La memoria utilizzata dall'implementazione AMS risulta essere simile all'implementazione naive. Questo per risultato è in parte dovuto all'overhead di sistema ed ai bassi valori di input size. Per via delle basse dimensioni dei dati di input, l'overhead di sistema va a mascherare gli effettivi benefici dell'implementazione AMS.
+La memoria utilizzata dall'implementazione AMS risulta essere simile all'implementazione naive, mostrando solo un leggero miglioramento per il dataset con maggiori dimensioni. Questo per risultato è in parte dovuto all'overhead di sistema ed ai bassi valori di input size. Per via delle basse dimensioni dei dati di input, l'overhead di sistema va a mascherare gli effettivi benefici dell'implementazione AMS.
 
 <div style="display: flex; justify-content: space-between;">
     <img src="plot/f1/max_rss_esponenziale_1.0.svg" width="48%">
@@ -659,12 +622,11 @@ La memoria utilizzata dall'implementazione AMS risulta essere simile all'impleme
 <img src="plot/f1/max_rss_poisson_75.svg" width="48%">
 
 Per valutare l'effettiva bontà dell'algoritmo andiamo a considerare la memoria utilizzata considerando solo le variabili utilizzate per rappresentare la stima. Supponiamo che la lunghezza dello stream sia 10^9. L'algoritmo naive andrà ad utilizzare $10^9 * 4byte = 4GB$ di memoria. 
-L'implementazione ams_f1_n, invece, utilizza $log_2(10^9)\approx30 bit = 4 byte $ di memoria, questo perchè la  memoria richiesta cresce in maniera logaritmica rispetto alla lunchezza dello stream.
+L'implementazione *ams_f1*, invece, utilizza $log_2(10^9)\approx30 bit = 4 byte $ di memoria, poichè la  memoria richiesta cresce in maniera logaritmica rispetto alla lunghezza dello stream.
 
 ### Tempi di esecuzione
 L'implementazione AMS risulta avere tempi di esecuzioni in linea con l'implementazione naive. Questo risultato è in linea con le aspettative, in quanto AMS è progettato per fornire stime approssimative, che non richiedono il conteggio esplicito di ogni occorrenza, non introducendo quindi tempi di esecuzioni elevati.
 
-> sistemalo
 
 <div style="display: flex; justify-content: space-between;">
     <img src="plot/f1/execution_time_esponenziale_1.0.svg" width="48%">
@@ -678,10 +640,10 @@ L'implementazione AMS risulta avere tempi di esecuzioni in linea con l'implement
 Come per Naive F0, anche Naive F1 fornisce una stima esatta di $F_1$, in quanto l'alggoritmo conta direttamente la frequenza di ogni elemento nello stream.
 Invece, l'algoritmo AMS utilizza un approccio di campionamento probabilistico, che introduce ovviamente un certo errore nel calcolo della stima.
 
-Durante l'implementaizione di AMS è emerso una problematica riguardante le stime per uno stream di piccole dimensioni, cioè il fatto che usare $\frac{1}{m}$ come frequenza di campionamento porta ad un aggiornamento troppo rapido del valore di $m$, portando ad un grande errore nelle stime. Questo errore teoricamente, si riduce all'aumentare della dimensione del stream, ma nel contesto della simulazione svolta, questo errore si è rivelato essere troppo grande per poter essere ignorato. Di conseguenza, per evitare questo errore, è stato necessario modificare la frequenza di campionamento come segue:
+Durante l'implementaizione di AMS è emerso una problematica riguardante le stime per uno stream di piccole dimensioni, cioè il fatto che usare $\frac{1}{m}$ come frequenza di campionamento porta ad un aggiornamento troppo rapido del valore di $m$, portando ad un grande errore nelle stime. Questo errore teoricamente, si riduce all'aumentare della dimensione del stream, ma nel contesto della simulazione svolta, questo errore si è rivelato essere troppo grande per poter essere ignorato. Di conseguenza, per diminuire questo errore, è stato necessario modificare la frequenza di campionamento come segue:
 > $p_i < \frac{1}{2m^3}$
 
-Con questa modifica, la condizione di aggiornamento di $m$ diventa più stringente, portando ad un aggiornamento più lento e un conseguente errore contenuto cosiderado la dimensione dello stream utilizzata nell'esperimento.  Tuttavia, c'è da considerare che questa modifica è stata applicata solo dalla natura dello stream preso in considerazione. In uno scenario applicativo reale, con stream di elevate dimensioni, queste restrizioni potrebbero non essere necessarie.
+Con questa modifica, la condizione di aggiornamento di $m$ diventa più stringente, portando ad un aggiornamento più lento e un conseguente errore contenuto cosiderado la dimensione dello stream utilizzata nell'esperimento.  Tuttavia, è importante sottolinare che questa modifica è stata applicata solo per via dalla natura dello stream preso in considerazione. In uno scenario applicativo reale, con stream di elevate dimensioni, queste restrizioni potrebbero non essere necessarie.
 
 
 <div style="display: flex; justify-content: space-between;">
@@ -718,6 +680,17 @@ Con questa modifica, la condizione di aggiornamento di $m$ diventa più stringen
 | 50000            | 32768 ($2^{15}$) e 65536 ($2^{16}$) |
 
 
+## Conclusioni e Potenziali Sviluppi futuri
+In questo lavoro sono state esplorate diverse implementazioni dell'algoritmo AMS Frequency Moments, in particolare per il calcolo di $F_0$ ed $F_1$.
+I risultati delle simulazioni mostrano che le varianti *ams_f0* ed *ams_f0_n*, che implementa la tecnica di Median of Means, riescono a mantenere un consumo di risorse basso. Tuttavia, le stime si sono dimostrate imprecise nel caso in cui la distribuzione dei dati di input presentino un elevata variabilità. 
+
+Per quanto riguarda *ams_f1*, sebbene i tempi di esecuzione siano simili alla variante naive, la variante ams mostra un leggero miglioramento in termini di memoria. 
+
+I risultati ottenuti mostrano diverse aree in cui è possibile migliorare e approfondire il lavoro svolto, offrendo diversi spunti per approfondire ulteriormente la tematica affrontata.
+1. Migliorare la stima per distribuzioni ad elevata variabilità: esplorare tecniche e implementazioni avanzate per andare a gestire al meglio questa casistica.
+2. Valutarne il comportamento per stream di enormi dimensioni: analizzarne il comportamento in queste condizioni è utile per far emergere ulteriori limiti dell'implementazione e valutarne al meglio la scalabilità.  
+3. Parallelizzazione e Scalabilità: valutare la parallelizzazione dell'algoritmo potrebbe offrire significativi vantaggi in termini di stima e scalabilità o permettere la gestione di più stream in contemporanea.
+4. Applicazione in contesti reali: analizzare il comportamento degli algoritmi in un contesto reale è utile per farne esaltare le criticità e opportunità di miglioramento.
 
 
 ## Bibliografia
