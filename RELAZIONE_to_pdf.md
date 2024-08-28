@@ -4,8 +4,7 @@ Data Mining & Machine Learning - A.A. 2023/2024
 Autore: Davide Cantoro
 Email: davide.cantoro@studenti.unisalento.it
 
-Repository GitHub: [AMS_Frequency_Moments_F0_F1](https://github.com/davidecantoro/AMS_Frequency_Moments_F0_F1)
-Versione Markdown (per una lettura più scorrevole): [RELAZIONE.md](https://github.com/davidecantoro/AMS_Frequency_Moments_F0_F1/blob/main/RELAZIONE.md)
+Repository GitHub: [https://github.com/davidecantoro/AMS_Frequency_Moments_F0_F1](https://github.com/davidecantoro/AMS_Frequency_Moments_F0_F1)
 
 ## Abstract
 Il seguente documento è tratto da un analisi del paper di Alon, Matias, e Szegedy, "The Space Complexity of Approximating the Frequency Moments" [1], che introduce un algoritmo di approssimazione dei momenti di frequenza $F_k$. In questa relazione, viene proposto uno pseudocodice per l'algoritmo AMS, seguido da una sua implementazione in C. 
@@ -176,15 +175,15 @@ La funzione err_sys è stata implementata per gestire gli errori. Tale funzione 
 
 Le funzioni "uniforme" e "esponenziale" sono state adattate per generare numeri interi. Il numero generato viene moltiplicato per $10^x$, dove $x$ è uno dei parametri modificabili, e successivamente troncato.
 
-Sono stati eseguiti i seguenti controlli sull'input inserito dall'utente:
-- Verificare che dopo i numeri (a, b, lambda, x ed n) non siano presenti lettere o altri caratteri non validi
-- Verificare che la lunghezza dello stream e x siano un numeri interi e positivi
-- Controllare che a,b e lambda siano numeri decimali positivi
-- Verificare che i numeri decimali e interi (a, b, lambda, x e n) siano inferiori al valore massimo possibile.
-- Controllare che b sia maggiore di a
-- Verificare che l'input relativo alla distribuzione sia troncato per accettare massimo 12 caratteri
-- Verificare che il nome del file sia più corto di 50 caratteri e che non contenga spazi, stringhe vuote, stringhe con solo spazi e caratteri speciali diversi da virgola, trattino e punto
-- Controllare che il nome dell'estensione sia più corto di 5 caratteri
+Sono stati eseguiti i seguenti controlli sull'input inserito da utente:
+- dopo i numeri (a, b, lambda, x ed n) non ci siano lettere o caratteri simili
+- la lunghezza dello stream e x siano un numeri interi e positivi
+- a,b e lambda siano numeri decimali positivi
+-  i numeri decimali e interi (a, b, lambda, x e n) siano inferiori al valore massimo possibile.
+- b sia maggiore di a
+- l'input relativo alla distribuzione è troncato per accettare massimo 12 caratteri
+- il nome del file sia più corto di 50 caratteri e che non contenga spazi, stringhe vuote, stringhe con solo spazi e caratteri speciali diversi da virgola, trattino e punto
+- il nome dell'estensione sia più corto di 5 caratteri
 
 Implementazione della generazione dello stream:
 ```c
@@ -229,13 +228,18 @@ double poisson(std::default_random_engine& generator, double lambda) {
 
 ## Momento di ordine 0: $F_0$
 
-Il momento di frequenza di ordine 0, ossia $F_0$, corrisponde al numero di elementi distinti di uno stream.
-Alon et al., [1] per l'implementazione del momento di ordine 0 propone una modifica dell'algoritmo Flajolet-Martin [2] per calcolare $F_0$. La modifica consiste nell'introduzione di randomicità mediante l'uso di una funzione hash lineare del tipo $h(x) = ax +b $, permettendo di ottenere una stima $F_0$ utilizzando solo O(log n) bit di memoria per contenere l'informazione.
+Alon et al., [1] per l'implementazione del momento di ordine 0 propone una modifica dell'algoritmo Flajolet-Martin [2] per calcolare il momento di ordine 0.
+L'implementazione introduce randomicità mediante l'uso della funzione z_hash, permettendo di ottenere una stima $F_0$. Così facendo è necessario utilizzare solo O(log n) bit di memoria per contenere l'informazione.
 
+Il momento di ordine k = 0, indicato anche $F_0$, è utilizzato per stimare il numero di elementi distinti in uno stream. 
 
-Sia definito il campo $F=GF(2^d)$, dove d è il più grande intero t.c. $2^d>n$. Siano $a,b$ due numeri casuali definiti in $F$, si computi $z_i = a * a_i +b$, con prodotto e somma riferiti al campo $F$. La funzione z così definita fornisce un mapping pairwise independent [1].
+Sia definito il campo $F=GF(2^d)$, dove d è il più grande intero t.c. $2^d>n$.
 
-Per ogni valore $z_i$ viene determinato il numero di trailing 0s, denotato con $r(z)$. Sia $R$ il massimo valore di $r_i$, dove $r_i=r(z_i)$.
+Siano $a,b$ due numeri casuali definiti in $F$, si computi $z_i = a * a_i +b$, con prodotto e somma riferiti al campo $F$. 
+
+La funzione z così definita fornisce un mapping pairwise independent [1].
+
+Sia $r(z)$ il numero di trailing $0s$. Sia $R$ il massimo valore di $r_i$, dove $r_i=r(z_i)$.
 
 L'output dell'algoritmo è dato da $Y=2^R$.
 
@@ -308,10 +312,9 @@ ATTENZIONE: Il programma non crea in automatico il file di output, quindi
 
 
 ### Implementazione
+La libreria getopt è stata utilizzata in modo da permettere l'utilizzo delle opzioni.
 
 La funzione err_sys è stata implementata per gestire gli errori. Tale funzione ha lo scopo di mostrare a schermo un messaggio di errore descrittivo e di terminare l'esecuzione del programma.
-
-Il punto centrale dell'elaborazione dello stream avviene nel ciclo while. In questa fase l'algoritmo esamina e processa ogni elemento dello stream andando a calcolare il valore di $R$.
 
 ```c
 sprintf(formato_input, "%%d%c", separatore);
@@ -335,7 +338,6 @@ distinct_item_estimate = 1 << R;
 
 ```
 Per il calcolo di $2^R$ si è utilizzato lo shift a sinistra, invece dell'utilizzo della libreria math. Questa opzione è stato resa possibile in quanto R è un numero intero (non negativo) e distinct_item_estimate è una potenza di due.
-
 
 Per l’implementazione completa, si rimanda ad "ams_f0.c".
 
@@ -378,10 +380,8 @@ regfree(&regex_function_filename);  // libero memoria filename regex
 ```
 
 #### Trailing 0s
-La seguente funzione implementata in c calcola il numero di trailing 0s di un dato numero in input.
-La funzione accetta solo valori interi non negativi.
-
-La funzione incrementa un contatore "zeros" finchè il bit meno significativo è 0, restituendo così il numero di trailing 0s.
+La seguente implementazione in c calcola il numero di trailing 0s di un dato numero in input.
+La funzione accetta solo numeri interi non negativi.
 ```c
 int trailing_0s(int a_i) {
 
@@ -399,8 +399,8 @@ int trailing_0s(int a_i) {
 La funzione hash $z_i = a * a_i +b$ è stata implementata come segue
 ```c
 srand(3454256);  // seed
-a = rand() % 9 + 1;  // [0;9]
-b = rand() % 9 + 1;  // [0;9]
+a = rand() % 100;  // [0;99]
+b = rand() % 100;  // [0;99]
 ```
 
 ```c
@@ -408,63 +408,18 @@ int z_hash(int a, int x, int b) {
     return a*x + b;
 }
 ```
-### Migliorare la stima di $F_0$ tramite Median of Means
-Per migliorare la stima di $F_0$ è possibile utilizzare la tecnica "Median of Means". Questa tecnica consiste nell'eseguire l'algoritmo con multiple funzioni hash, raggrupparne i risultati, calcolare la media e infine selzionare la mediana come stima finale.
-
-**Parametri usati nell'implementazione**
-- R: array contenente il numero massimo di trailing 0s per ogni funzione hash.
-- a,b: array contenente i valori di a e b per ogni funzione hash.
-- NHASH: numero di funzioni hash
-- GROUHASH: numero di gruppi
-
-Nell'implementazione sono state utilizzate 10 funzioni hash (NHASH) suddivise in 5 gruppi (GROUHASH).
-
-L'implementazione è analoga alla precedente implementazione di $F_0$, con l'unica differente che ora R non è più un singolo valore ma corrisponde ad un array che memorizza il numero massimo di trailing 0s per ogni funzione hash.
-
-```c
-while (fscanf(file, formato_input, &a_i) == 1) {
-    if (a_i >= 0 && a_i <= INT_MAX) {
-        for (int i = 0; i < NHASH; i++) {
-
-            z_i = z_hash(a[i], a_i, b[i]);
-            r_i = trailing_0s(z_i);
-            R[i] = max(R[i], r_i);
-
-        }
-    }
-}
-```
-Dopo aver determinato R, si passa al calcolo della stima.
-
-Per calcolare la stima degli elementi distinti, si raggruppano i risultati in un numero di gruppi determinato da NHASH / GROUHASH, successivamente si calcola la media per ciascun gruppo.
-Una volta colcolate le medie di ogni gruppo, si procede al calcolo della mediana delle medie, in modo da avere una stima finale degli elementi distinti.
-
-```c
-for (int i = 0; i < NHASH; i++) {
-    d_i_estimates[i] = 1 << R[i];
-}
-
-for (int i = 0; i < NHASH / GROUHASH; i++) {
-    double sum = 0.0;
-    for (int j = 0; j < GROUHASH; j++) {
-        sum += d_i_estimates[i * GROUHASH + j];
-    }
-    means[i] = sum / GROUHASH;
-}
-
-double distinct_item_estimate = median(means, NHASH / GROUHASH);
-```
-
 
 ## Momento di ordine 1: $F_1$
-Il momento di ordine k pari a 1 ($F_1$) corrisponde alla lunghezza dello Stream, ossia alla somma di tutti gli elementi distinti. 
 
-Ricordando la definizione di X trattata prima: $X=m(r^k - (r-1)^k)$
-
-Per il caso particolare di k=1, questa formula si riconduce ad un conteggio degli elementi dello stream. Di conseguenza, è sufficiente utilizzare un singolo contatore per tenere traccia della lunghezza di uno stream.
+Ricordiamo: $X=m(r^k - (r-1)^k)$
 
 
-L'algoritmo utilizza un approccio probabolistico per stimare $F_1$: un elemento dello stream viene accettato con probabilità pari ad 1/m, con m = contatore della lunghezza dello stream, in questo caso viene incrementato il conteggio di m. 
+Il momento di ordine k pari a 1 ($F_1$) corrisponde alla lunghezza dello Stream (la somma di tutti gli elementi distinti). 
+
+
+Per come è definito X, è sufficiente utilizzare un singolo contatore per calcolare il numero della lunghezza di uno stream.
+
+Il funzionamento dell'algoritmo è il seguente: con probabilità pari ad 1/m viene accettato un elemento dello stream, incrementando il conteggio di m (contatore della lunghezza dello stream). 
 
 ```c
 #include <stdlib.h>
@@ -540,38 +495,86 @@ ATTENZIONE: Il programma non crea in automatico il file di output, quindi
                             bisogna assicurarsi in anticipo della sua presenza.
 ```
 
+## Migliorare la stima di $F_0$ tramite Median of Means
+Per migliorare la stima di $F_0$ è possibile utilizzare la tecnica "Median of Means". Questa tecnica consiste nell'eseguire l'algoritmo con multiple funzioni hash, raggrupparne i risultati, calcolare la media e infine selzionare la mediana come stima finale.
+
+**Parametri**
+- R: array contenente il numero massimo di trailing 0s per ogni funzione hash.
+- a,b: array contenente i valori di a e b per ogni funzione hash.
+- NHASH: numero di funzioni hash
+- GROUHASH: numero di gruppi
+
+Per l'implementazione si è deciso di utilizzare (NHASH) 10 funzioni hash e di suddividerle in (GROUHASH) 5 gruppi.
+
+
+
+
+```c
+while (fscanf(file, formato_input, &a_i) == 1) {
+    if (a_i >= 0 && a_i <= INT_MAX) {
+        for (int i = 0; i < NHASH; i++) {
+
+            z_i = z_hash(a[i], a_i, b[i]);
+            r_i = trailing_0s(z_i);
+            R[i] = max(R[i], r_i);
+
+        }
+    }
+}
+```
+
+Per calcolare la stima degli elementi distinti, si raggruppano i risultati in gruppi (NHASH / GROUHASH) e si calcola la media di ogni gruppo.
+Successivamente, si calcola la mediana di queste medie in modo da avere una stima pià accurata degli elementi distinti.
+
+```c
+for (int i = 0; i < NHASH; i++) {
+    d_i_estimates[i] = 1 << R[i];
+}
+
+for (int i = 0; i < NHASH / GROUHASH; i++) {
+    double sum = 0.0;
+    for (int j = 0; j < GROUHASH; j++) {
+        sum += d_i_estimates[i * GROUHASH + j];
+    }
+    means[i] = sum / GROUHASH;
+}
+
+double distinct_item_estimate = median(means, NHASH / GROUHASH);
+```
 
 
 ## Simulazione
-L'obiettivo della simulazione consiste nel valutare le prestazioni degli algoritmi implementati, andando ad enfatizzare principalmente la memoria utilizzata, dato che l'algoritmo AMS si focalizza maggiormente sul risparmio di memoria.
+L'obiettivo della simulazione è quella di valutare le prestazioni dei programmi implementati andando a considerare principalmente la memoria utilizzata, visto che l'algoritmo AMS è un algoritmo che si focalizza sul risparmio di memoria.
 
-La simulazione prevede l'esecuzione dei programmi con input di diversa dimensione (1000, 5000, 10000, 25000 e 50000 elementi) utilizzando diverse distribuzioni:
+La simulazione consiste nell'esecuzione dei programmi con input di diversa dimensione (1000, 5000, 10000, 25000 e 50000 elementi) con diverse distribuzioni, le distribuzioni utilizzate sono:
 - Poisson con λ = 75, in modo da garantire un sufficiente numero di valori distinti.
 - Esponenziale con λ = 1, i valori ottenuti sono moltiplicati per $10^3$ prima di convertirli in interi, in modo da adattarsi meglio alla stima.
 - Uniforme tra 0 e 200.
 
 
-Per ciascun input, ogni algoritmo è stato eseguito 100 volte. Successivamente, sono state calcolate le mediane dei risultati in modo da ottenere delle stime più accurate.
+Per ogni input, ogni algoritmo è stato eseguito 100 volte. Successivamente, sono state calcolate le mediane di ogni input in modo da ottenere delle stime più accurate.
 
 
 Le metriche raccolte sono:
-- Stima di $F_k$.
-- Tempo di esecuzione (in secondi).
-- Maximum RSS: Maximum Resident Set Size, ossia la massima memoria utilizzata dal programma.
+- Stima di $F_k$
+- Tempo di esecuzione (in secondi)
+- Maximum RSS: Maximum Resident Set Size che sarebbe la massima memoria utilizzata dall'algoritmo
 
 **Premesse**
 Per acquisire le informazioni necessarie circa le prestazioni dei programmi è stato fatto uso gnu-time (su mac).
-Quindi, per eseguire la simulazione su mac è necessario installare gnu-time, per rendere disponibili informazioni come ‘Maximum resident set size’.
+Quindi, per eseguire la simulazione su mac bisogna installare gnu-time, per rendere disponibili informazioni come ‘Maximum resident set size’.
 
 ```bash
 brew install gnu-time
 ```
 
-Per avere delle metriche di confronto, sono stati implementati delle versioni naive degli algoritmi *ams_f0* ed *ans_f1*. Queste implementazioni utilizzano approcci più "naive" per il calcolo di $F_0$ ed $F_1$. Si basano sull'utilizzo di contatori senza particolare attenzione all'ottimizzazione della memoria utilizzata, andando di conseguenza ad utilizzare pi risorse rispetto alle loro varianti AMS.
+
+Per valutare le prestazioni dell'implementazione degli algoritmi ams_f0 e ams_f1 sono state utilizzate delle implementazioni naive per il calcolo di $F_0$ ed $F_1$.
+
+Le implementazioni naive utilizzano approcci più "naive" per il calcolo di $F_0$ ed $F_1$. Si basano sull'utilizzo di contatori senza particolare attenzione all'ottimizzazione della memoria utilizzata, andando di conseguenza ad utilizzare pi risorse rispetto alle altre implementazioni.
 
 
-I plot riguardanti i risultati dell'esperimento
-utilizzati nella relazione sono stati generati tramite python e sono disponibili, oltre che nella directory del progetto, anche su [Kaggle](https://www.kaggle.com/code/davidecantoro/ams-plot) o [GitHub].
+I plot usati sono disponibili su [Kaggle](https://www.kaggle.com/code/davidecantoro/ams-plot)
 
 **Macchina di test**
 L'esperimento è stato eseguito su un MacBook Pro con chip M3 Pro e 18 GB di RAM, SO: macOS Sonoma 14.6.1
